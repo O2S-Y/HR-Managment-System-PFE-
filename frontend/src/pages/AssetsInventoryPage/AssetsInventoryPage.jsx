@@ -1,7 +1,8 @@
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { AppShell } from '../../components/AppShell/AppShell'
 import { TopBar } from '../../components/TopBar/TopBar'
 import { useAuth } from '../../contexts/AuthContext'
+import { CreateAssetModal } from './CreateAssetModal'
 import './assetsInventoryPage.css'
 
 function IconSearch(props) {
@@ -73,10 +74,13 @@ export function AssetsInventoryPage() {
   const isRH = user?.role === 'RH'
   const isEmployee = user?.role === 'EMPLOYE'
 
+  const [localAssets, setLocalAssets] = useState(assets)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+
   // M5_UC4: Employee only sees their own assigned assets
   const displayAssets = isEmployee
-    ? assets.filter(a => a.status === 'Assigné')
-    : assets
+    ? localAssets.filter(a => a.status === 'Assigné')
+    : localAssets
 
   return (
     <AppShell
@@ -96,7 +100,7 @@ export function AssetsInventoryPage() {
           </div>
           {/* M5_UC1: Gérer l'inventaire (CRUD) — RH only */}
           {isRH && (
-            <button className="aiAddBtn" type="button">
+            <button className="aiAddBtn" type="button" onClick={() => setIsCreateModalOpen(true)}>
               <IconPlus />
               Ajouter un actif
             </button>
@@ -168,6 +172,12 @@ export function AssetsInventoryPage() {
           </table>
         </section>
       </div>
+
+      <CreateAssetModal
+        open={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreate={(newAsset) => setLocalAssets([newAsset, ...localAssets])}
+      />
     </AppShell>
   )
 }
