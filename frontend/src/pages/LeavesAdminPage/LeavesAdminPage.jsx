@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import { AppShell } from '../../components/AppShell/AppShell'
 import { TopBar } from '../../components/TopBar/TopBar'
+import { CreateLeaveTypeModal } from './CreateLeaveTypeModal'
+import { CreateLeaveAdjustmentModal } from './CreateLeaveAdjustmentModal'
 import './leavesAdminPage.css'
 
 const leaveTypes = [
@@ -15,6 +18,11 @@ const adjustments = [
 ]
 
 export function LeavesAdminPage() {
+  const [localLeaveTypes, setLocalLeaveTypes] = useState(leaveTypes)
+  const [localAdjustments, setLocalAdjustments] = useState(adjustments)
+  const [isCreateTypeModalOpen, setIsCreateTypeModalOpen] = useState(false)
+  const [isCreateAdjustmentModalOpen, setIsCreateAdjustmentModalOpen] = useState(false)
+
   return (
     <AppShell
       header={
@@ -29,37 +37,8 @@ export function LeavesAdminPage() {
       <div className="laPage">
         <section className="laSection">
           <div className="laSectionHead">
-            <div className="laSectionTitle">TYPES DE CONGÉS & QUOTAS</div>
-            <button className="laAddBtn" type="button">+ Ajouter un type</button>
-          </div>
-          <table className="laTable">
-            <thead>
-              <tr>
-                <th>TYPE</th>
-                <th>QUOTA</th>
-                <th>STATUT</th>
-                <th className="thRight">ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leaveTypes.map((lt) => (
-                <tr key={lt.name}>
-                  <td className="strong">{lt.name}</td>
-                  <td>{lt.quota}</td>
-                  <td><span className="laBadge">{lt.status}</span></td>
-                  <td className="tdRight">
-                    <button className="laEditBtn" type="button">Modifier</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-
-        <section className="laSection">
-          <div className="laSectionHead">
             <div className="laSectionTitle">AJUSTEMENTS MANUELS RÉCENTS</div>
-            <button className="laAddBtn" type="button">+ Nouvel ajustement</button>
+            <button className="laAddBtn" type="button" onClick={() => setIsCreateAdjustmentModalOpen(true)}>+ Nouvel ajustement</button>
           </div>
           <table className="laTable">
             <thead>
@@ -72,7 +51,7 @@ export function LeavesAdminPage() {
               </tr>
             </thead>
             <tbody>
-              {adjustments.map((a, idx) => (
+              {localAdjustments.map((a, idx) => (
                 <tr key={idx}>
                   <td className="strong">{a.employee}</td>
                   <td>{a.type}</td>
@@ -84,7 +63,48 @@ export function LeavesAdminPage() {
             </tbody>
           </table>
         </section>
+
+        <section className="laSection">
+          <div className="laSectionHead">
+            <div className="laSectionTitle">TYPES DE CONGÉS & QUOTAS</div>
+            <button className="laAddBtn" type="button" onClick={() => setIsCreateTypeModalOpen(true)}>+ Ajouter un type</button>
+          </div>
+          <table className="laTable">
+            <thead>
+              <tr>
+                <th>TYPE</th>
+                <th>QUOTA</th>
+                <th>STATUT</th>
+                <th className="thRight">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {localLeaveTypes.map((lt) => (
+                <tr key={lt.name}>
+                  <td className="strong">{lt.name}</td>
+                  <td>{lt.quota}</td>
+                  <td><span className="laBadge">{lt.status}</span></td>
+                  <td className="tdRight">
+                    <button className="laEditBtn" type="button">Modifier</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
       </div>
+
+      <CreateLeaveTypeModal
+        open={isCreateTypeModalOpen}
+        onClose={() => setIsCreateTypeModalOpen(false)}
+        onCreate={(newType) => setLocalLeaveTypes([newType, ...localLeaveTypes])}
+      />
+
+      <CreateLeaveAdjustmentModal
+        open={isCreateAdjustmentModalOpen}
+        onClose={() => setIsCreateAdjustmentModalOpen(false)}
+        onCreate={(newAdj) => setLocalAdjustments([newAdj, ...localAdjustments])}
+      />
     </AppShell>
   )
 }

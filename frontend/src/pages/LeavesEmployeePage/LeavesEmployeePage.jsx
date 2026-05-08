@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { AppShell } from '../../components/AppShell/AppShell'
 import { TopBar } from '../../components/TopBar/TopBar'
 import './leavesEmployeePage.css'
@@ -18,6 +19,43 @@ const myRequests = [
 ]
 
 export function LeavesEmployeePage() {
+  const [localRequests, setLocalRequests] = useState(myRequests)
+  const [type, setType] = useState('Congés payés')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+  const [comment, setComment] = useState('')
+
+  // Calculate rough duration
+  let duration = 0
+  if (startDate && endDate) {
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    if (!isNaN(start) && !isNaN(end) && end >= start) {
+      const diffTime = Math.abs(end - start)
+      duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1 // inclusive
+    }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (!startDate || !endDate || duration <= 0) return
+
+    const newReq = {
+      type,
+      typeTone: type === 'RTT' ? 'indigo' : type === 'Maladie' ? 'rose' : 'purple',
+      period: `${new Date(startDate).toLocaleDateString()} – ${new Date(endDate).toLocaleDateString()}`,
+      duration: `${duration} jour${duration > 1 ? 's' : ''}`,
+      status: 'En attente',
+      tone: 'wait'
+    }
+
+    setLocalRequests([newReq, ...localRequests])
+    setStartDate('')
+    setEndDate('')
+    setComment('')
+    setType('Congés payés')
+  }
+
   return (
     <AppShell
       header={
@@ -45,39 +83,39 @@ export function LeavesEmployeePage() {
         <section className="card" aria-label="Nouvelle demande">
           <h2 className="cardTitle">Nouvelle demande</h2>
 
-          <div className="formGrid">
+          <form className="formGrid" onSubmit={handleSubmit}>
             <div className="field">
               <div className="label">TYPE DE CONGÉ</div>
-              <select className="select">
-                <option>Congés payés</option>
-                <option>RTT</option>
-                <option>Maladie</option>
+              <select className="select" value={type} onChange={(e) => setType(e.target.value)}>
+                <option value="Congés payés">Congés payés</option>
+                <option value="RTT">RTT</option>
+                <option value="Maladie">Maladie</option>
               </select>
             </div>
             <div className="field">
               <div className="label">DATE DE DÉBUT</div>
-              <input className="input" placeholder="mm/dd/yyyy" />
+              <input className="input" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required />
             </div>
             <div className="field">
               <div className="label">DATE DE FIN</div>
-              <input className="input" placeholder="mm/dd/yyyy" />
+              <input className="input" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} required />
             </div>
             <div className="field fieldWide">
               <div className="label">COMMENTAIRE (OPTIONNEL)</div>
-              <textarea className="textarea" placeholder="Ajoutez un motif ou une précision si nécessaire..." />
+              <textarea className="textarea" placeholder="Ajoutez un motif ou une précision si nécessaire..." value={comment} onChange={(e) => setComment(e.target.value)} />
             </div>
-          </div>
 
-          <div className="cardFooter">
-            <div className="duration">
-              <span className="durationDot" aria-hidden="true" />
-              Durée : 5 jours ouvrables
+            <div className="cardFooter" style={{ gridColumn: '1 / -1' }}>
+              <div className="duration">
+                <span className="durationDot" aria-hidden="true" />
+                Durée : {duration > 0 ? `${duration} jour${duration > 1 ? 's' : ''} ouvrable${duration > 1 ? 's' : ''}` : '-'}
+              </div>
+              <button className="submitBtn" type="submit" disabled={duration <= 0}>
+                <IconPaperPlane />
+                Soumettre
+              </button>
             </div>
-            <button className="submitBtn" type="button">
-              <IconPaperPlane />
-              Soumettre
-            </button>
-          </div>
+          </form>
         </section>
 
         <section className="card" aria-label="Mes demandes">
@@ -94,7 +132,7 @@ export function LeavesEmployeePage() {
               </tr>
             </thead>
             <tbody>
-              {myRequests.map((r, idx) => (
+              {localRequests.map((r, idx) => (
                 <tr key={idx}>
                   <td className="strong">{r.type}</td>
                   <td className="mono">{r.period}</td>

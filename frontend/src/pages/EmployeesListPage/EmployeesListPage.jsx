@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AppShell } from '../../components/AppShell/AppShell'
 import { TopBar } from '../../components/TopBar/TopBar'
 import { CreateEmployeeModal } from './CreateEmployeeModal'
@@ -57,9 +57,27 @@ const initialEmployees = [
 
 export function EmployeesListPage() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const isRH = user?.role === 'RH'
   const [createOpen, setCreateOpen] = useState(false)
   const [employees, setEmployees] = useState(initialEmployees)
+  const [activeFilter, setActiveFilter] = useState('Tous')
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const filteredEmployees = useMemo(() => {
+    return employees.filter(e => {
+      // Filter by search term
+      if (searchTerm && !e.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false
+      }
+      // Filter by active pill
+      if (activeFilter === 'Tous') return true
+      if (activeFilter === 'Actif' && e.status !== 'Actif') return false
+      if (activeFilter === 'Inactif' && e.status !== 'Inactif') return false
+      if (activeFilter === 'En congé' && e.status !== 'En congé') return false
+      return true
+    })
+  }, [employees, activeFilter, searchTerm])
 
   const addEmployee = useMemo(() => {
     return (empRow) => setEmployees((prev) => [empRow, ...prev])
@@ -84,7 +102,12 @@ export function EmployeesListPage() {
         <div className="empToolbar" aria-label="Barre d'actions">
           <div className="empSearchWrap">
             <IconSearch className="empSearchIcon" />
-            <input className="empSearchInput" placeholder="Rechercher un employé..." />
+            <input
+              className="empSearchInput"
+              placeholder="Rechercher un employé..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
           {/* M1_UC1: Créer un profil — RH only */}
           {isRH && (
@@ -96,18 +119,16 @@ export function EmployeesListPage() {
         </div>
 
         <div className="filterRow" aria-label="Filtres">
-          <button className="pill pillActive" type="button">
-            Tous
-          </button>
-          <button className="pill" type="button">
-            Actif
-          </button>
-          <button className="pill" type="button">
-            Inactif
-          </button>
-          <button className="pill" type="button">
-            En congé
-          </button>
+          {['Tous', 'Actif', 'Inactif', 'En congé'].map(f => (
+            <button
+              key={f}
+              className={f === activeFilter ? 'pill pillActive' : 'pill'}
+              type="button"
+              onClick={() => setActiveFilter(f)}
+            >
+              {f}
+            </button>
+          ))}
         </div>
 
         <section className="tableCard" aria-label="Liste des employés">
@@ -123,8 +144,8 @@ export function EmployeesListPage() {
               </tr>
             </thead>
             <tbody>
-              {employees.map((e) => (
-                <tr key={e.id}>
+              {filteredEmployees.map((e) => (
+                <tr key={e.id} onClick={() => navigate(`/employees/${e.id}`)} style={{ cursor: 'pointer' }}>
                   <td>
                     <div className="empCell">
                       <div className="badge">{e.initials}</div>
@@ -139,7 +160,7 @@ export function EmployeesListPage() {
                       {e.status}
                     </span>
                   </td>
-                  <td className="tdActions">
+                  <td className="tdActions" onClick={(ev) => ev.stopPropagation()}>
                     {/* M1_UC5: Consulter les profils — RH + Owner */}
                     <Link className="actionIcon" to={`/employees/${e.id}`} aria-label="Voir">
                       <IconEye />

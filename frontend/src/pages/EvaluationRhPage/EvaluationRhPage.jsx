@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { AppShell } from '../../components/AppShell/AppShell'
 import { TopBar } from '../../components/TopBar/TopBar'
 import './evaluationRhPage.css'
@@ -20,6 +21,12 @@ const evaluations = [
 ]
 
 export function EvaluationRhPage() {
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const filteredEvaluations = evaluations.filter(ev => 
+    ev.name.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
     <AppShell
       header={
@@ -28,6 +35,8 @@ export function EvaluationRhPage() {
           subtitle="LECTURE SEULE"
           showSearch
           searchPlaceholder="Rechercher un employé..."
+          searchValue={searchTerm}
+          onSearchChange={setSearchTerm}
           right={
             <button className="erhExportBtn" type="button">
               📊 Générer rapport
@@ -54,17 +63,23 @@ export function EvaluationRhPage() {
               </tr>
             </thead>
             <tbody>
-              {evaluations.map((ev) => (
-                <tr key={ev.name}>
-                  <td className="strong">{ev.name}</td>
-                  <td>{ev.dept}</td>
-                  <td className="mono">{ev.period}</td>
-                  <td><DotRating value={ev.score} /></td>
-                  <td className="tdRight">
-                    <span className={ev.status === 'Complété' ? 'erhStatus ok' : 'erhStatus wait'}>{ev.status}</span>
-                  </td>
+              {filteredEvaluations.length > 0 ? (
+                filteredEvaluations.map((ev) => (
+                  <tr key={ev.name}>
+                    <td className="strong">{ev.name}</td>
+                    <td>{ev.dept}</td>
+                    <td className="mono">{ev.period}</td>
+                    <td><DotRating value={ev.score} /></td>
+                    <td className="tdRight">
+                      <span className={ev.status === 'Complété' ? 'erhStatus ok' : 'erhStatus wait'}>{ev.status}</span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>Aucune évaluation trouvée</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </section>
