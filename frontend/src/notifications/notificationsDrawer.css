@@ -1,0 +1,230 @@
+:root {
+  --nd-text: var(--text);
+  --nd-muted: var(--muted);
+  --nd-accent: var(--brand-cyan);
+  --nd-accent-navy: var(--brand-navy);
+  --nd-border: var(--border-soft);
+}
+
+.ndOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.ndBackdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(27, 58, 75, 0.15);
+  backdrop-filter: blur(6px);
+}
+
+[data-theme='dark'] .ndBackdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.ndPanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 384px;
+  background: var(--surface);
+  border-left: 1px solid var(--border-mid);
+  box-shadow: -12px 0 40px rgba(27, 58, 75, 0.12);
+  display: flex;
+  flex-direction: column;
+  animation: ndSlideIn 200ms ease-out;
+}
+
+@keyframes ndSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0.85;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.ndHead {
+  padding: 20px 24px 18px;
+  border-bottom: 1px solid var(--nd-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(246, 243, 242, 0.5);
+}
+
+[data-theme='dark'] .ndHead {
+  background: var(--surface-2);
+}
+
+.ndTitle {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: var(--nd-accent-navy);
+}
+
+[data-theme='dark'] .ndTitle {
+  color: var(--nd-text);
+}
+
+.ndCount {
+  color: var(--nd-muted);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.ndMarkAll {
+  border: 0;
+  background: transparent;
+  color: var(--nd-accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 200ms ease;
+}
+
+.ndMarkAll:hover {
+  opacity: 0.8;
+}
+
+.ndChips {
+  padding: 14px 24px;
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--nd-border);
+  overflow-x: auto;
+}
+
+.ndChip {
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-mid);
+  background: var(--canvas);
+  color: var(--nd-muted);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.ndChip:hover {
+  background: rgba(91, 150, 174, 0.08);
+  border-color: var(--nd-accent);
+}
+
+.ndChipActive {
+  background: var(--brand-navy);
+  color: #fff;
+  border-color: var(--brand-navy);
+}
+
+.ndChipActive:hover {
+  background: var(--brand-navy);
+  border-color: var(--brand-navy);
+}
+
+.ndList {
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+.ndItem {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 14px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--nd-border);
+  transition: background 160ms ease;
+  cursor: pointer;
+}
+
+.ndItem:hover {
+  background: rgba(91, 150, 174, 0.04);
+}
+
+.ndUnread {
+  background: rgba(91, 150, 174, 0.06);
+}
+
+.ndRead {
+  opacity: 0.78;
+}
+
+.ndIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+}
+
+.ndItemTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--nd-text);
+  line-height: 1.4;
+}
+
+.ndUnread .ndItemTitle {
+  font-weight: 700;
+  color: var(--brand-navy);
+}
+
+[data-theme='dark'] .ndUnread .ndItemTitle {
+  color: var(--nd-text);
+}
+
+.ndTime {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--nd-muted);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.ndDot {
+  position: absolute;
+  top: 22px;
+  right: 24px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--nd-accent);
+}
+
+.ndFooter {
+  padding: 16px 24px;
+  border-top: 1px solid var(--nd-border);
+  text-align: center;
+  background: rgba(246, 243, 242, 0.3);
+  color: var(--nd-muted);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+.ndFooter:hover {
+  color: var(--brand-navy);
+}
+
+@media (max-width: 1100px) {
+  .ndPanel {
+    width: min(384px, 100%);
+  }
+}

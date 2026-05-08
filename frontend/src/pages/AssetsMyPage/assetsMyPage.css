@@ -1,0 +1,77 @@
+.ampPage {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1.5rem 0;
+}
+
+.ampCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ampCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.ampCardTitle {
+  font-family: var(--font-display, var(--font));
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.ampCount {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.ampTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.ampTable th {
+  text-align: left;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.ampTable td {
+  padding: 0.85rem 1.5rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+}
+.ampTable tr:last-child td {
+  border-bottom: none;
+}
+
+.thRight { text-align: right !important; }
+.tdRight { text-align: right; }
+.strong  { font-weight: 600; }
+.mono    { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; }
+
+.ampBadge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(39, 174, 96, 0.12);
+  color: #27ae60;
+}

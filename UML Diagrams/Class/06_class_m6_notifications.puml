@@ -1,0 +1,129 @@
+@startuml NewDEV_RH_Class_M6_Notifications
+' =====================================================================
+' Module 6 — Notifications & Audit (transversal)
+' 2 entités : Notification, AuditLog
+' + 2 services techniques : NotificationService, AuditService
+'
+' RÈGLE FONDAMENTALE :
+'   Ces services sont appelés UNIQUEMENT depuis la couche Service
+'   (jamais depuis un Controller). Cela garantit que toute action
+'   métier produit automatiquement notif + audit dans la même
+'   transaction (@Transactional).
+' =====================================================================
+
+title Module 6 — Notifications & Audit
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam shadowing false
+
+class User <<Entity>> #E3F2FD {
+  - id : Long
+  - email : String
+  - role : Role
+}
+
+class Notification <<Entity>> {
+  - id : Long
+  - type : NotificationType
+  - message : String
+  - isRead : boolean
+  - referenceId : Long
+  - referenceType : String
+  - createdAt : LocalDateTime
+  --
+  + markAsRead() : void
+  + isUnread() : boolean
+}
+
+class AuditLog <<Entity>> {
+  - id : Long
+  - action : String     ' ex: CREATE, UPDATE, ARCHIVE, APPROVE
+  - entityType : String ' ex: Employee, LeaveRequest
+  - entityId : Long
+  - oldValue : String   ' JSON serialized (TEXT)
+  - newValue : String   ' JSON serialized (TEXT)
+  - createdAt : LocalDateTime
+}
+
+class NotificationService <<Service>> #FFECB3 {
+  + notifyLeaveApproved(req : LeaveRequest) : void
+  + notifyLeaveRefused(req : LeaveRequest) : void
+  + notifyLeaveSubmitted(req : LeaveRequest) : void
+  + notifyEvaluationSubmitted(eval : Evaluation) : void
+  + notifyAssetAssigned(assignment : AssetAssignment) : void
+  + getUnreadCount(user : User) : long
+}
+
+class AuditService <<Service>> #FFECB3 {
+  + log(actor : User, action : String, entityType : String, entityId : Long, oldValue : Object, newValue : Object) : void
+  + findByActor(userId : Long) : List<AuditLog>
+  + findByEntity(entityType : String, entityId : Long) : List<AuditLog>
+}
+
+enum NotificationType {
+  LEAVE_APPROVED
+  LEAVE_REFUSED
+  LEAVE_SUBMITTED
+  EVALUATION_SUBMITTED
+  ASSET_ASSIGNED
+}
+
+' Relations
+User "1" -- "0..*" Notification : recipient
+User "1" -- "0..*" AuditLog : actor
+
+Notification --> NotificationType
+NotificationService ..> Notification : produces
+AuditService ..> AuditLog : produces
+
+note right of AuditLog
+  **Table immuable (INSERT-only)**
+  Aucun UPDATE ni DELETE n'est jamais
+  permis sur cette table.
+
+  oldValue / newValue stockés en JSON
+  permettent de reconstruire l'état
+  d'une entité à n'importe quel instant.
+
+  Lecture seule : Owner & RH uniquement.
+end note
+
+note bottom of NotificationService
+  **Triggers automatiques (cf. PRD §4 M6) :**
+  - Owner approuve un congé → l'employé
+  - Owner refuse un congé → l'employé
+  - Employé soumet un congé → l'Owner
+  - Owner soumet une évaluation → l'employé
+  - RH affecte un actif → l'employé concerné
+
+  Les notifications sont **in-app uniquement**
+  (pas d'email — choix de scope).
+end note
+
+note bottom of AuditService
+  **Toutes les actions CRUD sont auditées.**
+  Appelé depuis chaque méthode de Service
+  qui modifie l'état du système.
+
+  Exemple :
+  EmployeeService.archive(id) {
+    employee.archive();
+    auditService.log(actor, "ARCHIVE", "Employee", id, before, after);
+    repo.save(employee);
+  }
+end note
+
+note left of Notification
+  **referenceId + referenceType**
+  permettent au frontend de naviguer
+  vers la ressource concernée par
+  un clic sur la notification.
+  Exemple :
+    type = LEAVE_APPROVED
+    referenceType = "LeaveRequest"
+    referenceId = 42
+  → /leaves/42
+end note
+
+@enduml

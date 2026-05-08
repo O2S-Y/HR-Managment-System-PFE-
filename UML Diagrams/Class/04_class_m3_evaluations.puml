@@ -1,0 +1,118 @@
+@startuml NewDEV_RH_Class_M3_Evaluations
+' =====================================================================
+' Module 3 — Évaluation de Performance
+' 4 entités : EvaluationPeriod, Objective, Evaluation, ObjectiveScore
+'
+' Cycle de vie :
+'   1. Owner crée une période d'évaluation (status = ACTIVE)
+'   2. Owner définit des objectifs PAR EMPLOYÉ pour la période
+'   3. À la clôture de la période, Owner soumet une évaluation
+'      (= scores + commentaires sur chaque objectif + score global)
+'   4. Owner clôture la période → tout devient immuable
+' =====================================================================
+
+title Module 3 — Évaluation de Performance
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam shadowing false
+
+class Employee <<Entity>> #E8F5E9 {
+  - id : Long
+  - fullName : String
+}
+
+class EvaluationPeriod <<Entity>> {
+  - id : Long
+  - name : String
+  - startDate : LocalDate
+  - endDate : LocalDate
+  - status : EvaluationPeriodStatus
+  - createdBy : Long  ' user_id
+  - createdAt : LocalDateTime
+  --
+  + close() : void
+  + isActive() : boolean
+  + isClosed() : boolean
+}
+
+class Objective <<Entity>> {
+  - id : Long
+  - title : String
+  - description : String
+  - createdAt : LocalDateTime
+}
+
+class Evaluation <<Entity>> {
+  - id : Long
+  - globalScore : int
+  - submittedBy : Long  ' user_id (Owner)
+  - submittedAt : LocalDateTime
+  --
+  + addScore(objective : Objective, score : int, comment : String) : void
+  + isComplete() : boolean
+}
+
+class ObjectiveScore <<Entity>> {
+  - id : Long
+  - score : int
+  - comment : String
+}
+
+enum EvaluationPeriodStatus {
+  ACTIVE
+  CLOTUREE
+}
+
+' Relations
+EvaluationPeriod "1" -- "0..*" Objective
+EvaluationPeriod "1" -- "0..*" Evaluation
+Employee         "1" -- "0..*" Objective
+Employee         "1" -- "0..*" Evaluation
+Evaluation "1" *-- "1..*" ObjectiveScore : composition
+Objective  "1" -- "0..*" ObjectiveScore
+
+EvaluationPeriod --> EvaluationPeriodStatus
+
+note right of EvaluationPeriod
+  **Règle invariante :**
+  Une seule période avec status = ACTIVE
+  à la fois (vérifié dans le service Java).
+
+  Une période CLOTUREE rend toutes ses
+  évaluations IMMUABLES (pas de PUT
+  autorisé après clôture).
+end note
+
+note bottom of Evaluation
+  **Contrainte UNIQUE en base :**
+  UNIQUE (period_id, employee_id)
+  → Un employé ne peut pas avoir
+    deux évaluations dans la même
+    période.
+
+  **globalScore est SAISI MANUELLEMENT**
+  par l'Owner (1..5). Le système ne
+  fait PAS de moyenne automatique des
+  scores d'objectifs — c'est un choix
+  délibéré (l'Owner pondère selon
+  l'importance de chaque objectif).
+end note
+
+note left of ObjectiveScore
+  **Validation avant soumission :**
+  Tous les objectifs de la période
+  pour l'employé DOIVENT avoir un
+  score (1..5) ET un commentaire
+  non vide. Sinon Evaluation.isComplete()
+  retourne false → 400 Bad Request.
+end note
+
+note top of Objective
+  Un objectif est lié à UNE période
+  ET UN employé. Donc deux employés
+  peuvent avoir des objectifs différents
+  dans la même période.
+end note
+
+@enduml

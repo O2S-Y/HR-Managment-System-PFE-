@@ -1,0 +1,172 @@
+@startuml Sequence_Demande_Conge
+/'
+  NewDEV RH — Diagramme de séquence
+  Flux : Soumission d'une demande de congé + décision Owner
+  Participants : Employé, Navigateur React, API Spring Boot,
+                 Services métier, Base de données MySQL
+'/
+
+title Diagramme de séquence — Demande de congé (soumission + validation)
+
+skinparam sequenceArrowThickness 2
+skinparam participantPadding 12
+skinparam sequenceGroupBorderColor #4A7FA5
+
+actor "Employé" as EMP #E8F5E9
+participant "React\n(Frontend)" as UI #ECEFF1
+participant "LeaveController\n(@PreAuthorize)" as CTRL #E3F2FD
+participant "LeaveService\n(@Transactional)" as SRV #E3F2FD
+participant "NotificationService" as NOTIF #FFF8E1
+participant "AuditService" as AUDIT #FFF8E1
+database "MySQL" as DB #FCE4EC
+
+actor "Owner" as OWN #FFF8E1
+
+== Phase 1 : Soumission de la demande ==
+
+EMP -> UI : Remplit le formulaire\n(type, dateDebut, dateFin, commentaire)
+activate UI
+
+UI -> CTRL : POST /api/leaves\n{typeId, dateDebut, dateFin, commentaire}\nAuthorization: Bearer <JWT>
+activate CTRL
+
+CTRL -> CTRL : Vérifier rôle = **EMPLOYE**\n(@PreAuthorize)
+
+CTRL -> SRV : creerDemande(employeId, dto)
+activate SRV
+
+SRV -> SRV : Valider dateDebut > aujourd'hui\net dateFin >= dateDebut
+
+SRV -> SRV : **Calculer jours ouvrables**\n(exclure vendredi + samedi)
+
+SRV -> DB : SELECT solde FROM leave_balances\nWHERE employe = ? AND type = ? AND annee = ?
+activate DB
+DB --> SRV : solde (totalJours, joursUtilisés)
+deactivate DB
+
+SRV -> SRV : Vérifier :\njoursRestants >= joursOuvrables
+
+SRV -> DB : SELECT COUNT(*) FROM leave_requests\nWHERE employe = ? AND statut IN\n('EN_ATTENTE','APPROUVE')\nAND dates chevauchent
+activate DB
+DB --> SRV : count
+deactivate DB
+
+SRV -> SRV : Vérifier :\ncount == 0 (pas de chevauchement)
+
+SRV -> DB : INSERT INTO leave_requests\n(statut = 'EN_ATTENTE', ...)
+activate DB
+DB --> SRV : demande créée (id)
+deactivate DB
+
+SRV -> AUDIT : logAction("CREATE",\n"LeaveRequest", id, null, nouvelleValeur)
+activate AUDIT
+AUDIT -> DB : INSERT INTO audit_log
+deactivate AUDIT
+
+SRV -> NOTIF : notifier(owner,\n"LEAVE_SUBMITTED", demandeId)
+activate NOTIF
+NOTIF -> DB : INSERT INTO notifications\n(destinataire = owner)
+deactivate NOTIF
+
+SRV --> CTRL : DemandeCongeDTO
+deactivate SRV
+
+CTRL --> UI : 201 Created\n{id, statut: "EN_ATTENTE", ...}
+deactivate CTRL
+
+UI --> EMP : Afficher confirmation :\n« Demande soumise avec succès »
+deactivate UI
+
+== Phase 2 : Décision du Owner ==
+
+OWN -> UI : Consulte les demandes en attente
+activate UI
+
+UI -> CTRL : GET /api/leaves?statut=EN_ATTENTE\nAuthorization: Bearer <JWT>
+activate CTRL
+CTRL -> CTRL : Vérifier rôle = **OWNER**
+CTRL -> DB : SELECT * FROM leave_requests\nWHERE statut = 'EN_ATTENTE'
+activate DB
+DB --> CTRL : liste des demandes
+deactivate DB
+CTRL --> UI : 200 OK [{demandes...}]
+deactivate CTRL
+
+UI --> OWN : Afficher la liste des demandes\navec boutons Approuver / Refuser
+deactivate UI
+
+alt Approuver la demande
+  OWN -> UI : Cliquer « Approuver »\n+ commentaire (optionnel)
+  activate UI
+
+  UI -> CTRL : PUT /api/leaves/{id}/approve\n{commentaire}\nAuthorization: Bearer <JWT>
+  activate CTRL
+
+  CTRL -> CTRL : Vérifier rôle = **OWNER**
+
+  CTRL -> SRV : approuverDemande(id, commentaire)
+  activate SRV
+
+  SRV -> DB : UPDATE leave_requests\nSET statut = 'APPROUVE',\ncommentaire_decision, date_decision
+  activate DB
+  DB --> SRV : OK
+  deactivate DB
+
+  SRV -> DB : UPDATE leave_balances\nSET jours_utilises += jours_ouvrables
+  activate DB
+  DB --> SRV : OK
+  deactivate DB
+
+  SRV -> AUDIT : logAction("APPROVE",\n"LeaveRequest", id,\nancienneValeur, nouvelleValeur)
+
+  SRV -> NOTIF : notifier(employe,\n"LEAVE_APPROVED", demandeId)
+
+  SRV --> CTRL : DemandeCongeDTO (APPROUVE)
+  deactivate SRV
+
+  CTRL --> UI : 200 OK {statut: "APPROUVE"}
+  deactivate CTRL
+
+  UI --> OWN : Afficher confirmation
+  deactivate UI
+
+else Refuser la demande
+  OWN -> UI : Cliquer « Refuser »\n+ commentaire (obligatoire)
+  activate UI
+
+  UI -> CTRL : PUT /api/leaves/{id}/refuse\n{commentaire}\nAuthorization: Bearer <JWT>
+  activate CTRL
+
+  CTRL -> SRV : refuserDemande(id, commentaire)
+  activate SRV
+
+  SRV -> DB : UPDATE leave_requests\nSET statut = 'REFUSE',\ncommentaire_decision, date_decision
+  activate DB
+  DB --> SRV : OK
+  deactivate DB
+
+  note over SRV : Pas de modification\ndu solde en cas de refus
+
+  SRV -> AUDIT : logAction("REFUSE",\n"LeaveRequest", id, ...)
+
+  SRV -> NOTIF : notifier(employe,\n"LEAVE_REFUSED", demandeId)
+
+  SRV --> CTRL : DemandeCongeDTO (REFUSE)
+  deactivate SRV
+
+  CTRL --> UI : 200 OK {statut: "REFUSE"}
+  deactivate CTRL
+
+  UI --> OWN : Afficher confirmation
+  deactivate UI
+end
+
+note over DB
+  **Règles métier :**
+  • Jours ouvrables : exclure ven + sam (Maroc)
+  • Solde vérifié côté serveur
+  • Audit log immuable (INSERT only)
+  • Transactions @Transactional
+end note
+
+@enduml

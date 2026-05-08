@@ -1,0 +1,302 @@
+@startuml Diagramme_Classes_Complet_FR_NewDEV_RH
+/'
+  NewDEV RH — Diagramme de classes (vue domaine)
+  Aligné sur : PRD §6, schéma MySQL (versions EN ou FR avec @Column),
+  et modèle d’autorité à 3 rôles (Owner / RH / Employé).
+
+  Ce fichier N’EST PAS celui généré précédemment en petits modules
+  (UML Diagrams/Class/00..06) : ici c’est une vue « une seule planche ».
+
+  Différences corrigées vs un brouillon commun :
+    - Relation User ↔ Employé : 1 → 0..1 (Owner/RH peuvent n’être pas Employé)
+    - Role est un ENUM, pas une classe liée par composition *
+    - StatutEmployé conforme au PRD : ACTIF / ARCHIVE (pas liste étendue arbitraire)
+    - Pas de mise à jour “updated_at” utilisateur tant que ce n’est pas en base
+    - Journal d’audit : trace par id utilisateur acteur (+ JSON), pas seulement e-mail
+'/
+
+title Système de Gestion RH — Diagramme de classes (domaine) — NewDEV Maroc
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #F0F7FF
+skinparam classBorderColor #4A7FA5
+skinparam classHeaderBackgroundColor #4A7FA5
+skinparam classHeaderFontColor #FFFFFF
+skinparam ArrowColor #4A7FA5
+skinparam linetype ortho
+
+' ---------- AUTH ----------
+class Utilisateur {
+  - id : Long
+  - courriel : String
+  - hashMotDePasse : String
+  - role : Role
+  - actif : boolean
+  - dateCreation : LocalDateTime
+  --
+  + estOwner() : boolean
+  + estRH() : boolean
+  + estEmploye() : boolean
+}
+
+enum Role <<enumeration>> {
+  OWNER
+  RH
+  EMPLOYE
+}
+
+Utilisateur --> Role : rôle
+
+
+' ---------- MODULE 1 ----------
+class Employe {
+  - id : Long
+  - nomComplet : String
+  - cin : String
+  - departement : String
+  - poste : String
+  - typeContrat : TypeContrat
+  - dateEmbauche : LocalDate
+  - dateFinContrat : LocalDate
+  - statut : StatutEmploye
+  - dateCreation : LocalDateTime
+  --
+  + estActif() : boolean
+  + estArchive() : boolean
+}
+
+enum TypeContrat <<enumeration>> {
+  CDI
+  CDD
+  STAGE
+  INTERIM
+}
+
+enum StatutEmploye <<enumeration>> {
+  ACTIF
+  ARCHIVE
+}
+
+class HistoriquePoste {
+  - id : Long
+  - ancienPoste : String
+  - nouveauPoste : String
+  - ancienDepartement : String
+  - nouveauDepartement : String
+  - motifChangement : String
+  - dateChangement : LocalDateTime
+  - idUtilisateurAuteur : Long
+}
+
+class DocumentRh {
+  - id : Long
+  - nomFichierInterne : String
+  - nomFichierOriginal : String
+  - cheminFichier : String
+  - tailleOctets : Long
+  - typeMime : String
+  - typeDocument : TypeDocumentRh
+  - dateDepot : LocalDateTime
+  - idUtilisateurDeposant : Long
+}
+
+enum TypeDocumentRh <<enumeration>> {
+  CONTRAT
+  CIN
+  DIPLOME
+  ATTESTATION
+  AUTRE
+}
+
+Employe "1" *-- "0..*" HistoriquePoste : évolutions de poste
+Employe "1" *-- "0..*" DocumentRh : dossier RH
+
+
+' ---------- MODULE 2 ----------
+class TypeConge {
+  - id : Long
+  - nom : String
+  - quotaAnnuelJours : int
+  - justificationRequise : boolean
+  - actif : boolean
+}
+
+class SoldeConge {
+  - id : Long
+  - annee : int
+  - totalJours : BigDecimal
+  - joursUtilises : BigDecimal
+  --
+  + joursRestants() : BigDecimal
+}
+
+class DemandeConge {
+  - id : Long
+  - dateDebut : LocalDate
+  - dateFin : LocalDate
+  - joursOuvrables : int
+  - commentaire : String
+  - statut : StatutDemandeConge
+  - commentaireDecision : String
+  - dateDecision : LocalDateTime
+  - dateSoumission : LocalDateTime
+  --
+  + estAnnulable() : boolean
+  + estEnAttente() : boolean
+}
+
+enum StatutDemandeConge <<enumeration>> {
+  EN_ATTENTE
+  APPROUVE
+  REFUSE
+  ANNULE
+}
+
+Employe "1" -- "0..*" SoldeConge
+TypeConge "1" -- "0..*" SoldeConge
+Employe "1" -- "0..*" DemandeConge : soumet
+TypeConge "1" -- "0..*" DemandeConge
+Utilisateur "0..1" -- "0..*" DemandeConge : décide (Owner)
+
+
+' ---------- MODULE 3 ----------
+class PeriodeEvaluation {
+  - id : Long
+  - libelle : String
+  - dateDebut : LocalDate
+  - dateFin : LocalDate
+  - statut : StatutPeriode
+  - idUtilisateurCreateur : Long
+  - dateCreation : LocalDateTime
+}
+
+enum StatutPeriode <<enumeration>> {
+  ACTIVE
+  CLOTUREE
+}
+
+class Objectif {
+  - id : Long
+  - titre : String
+  - description : String
+  - dateCreation : LocalDateTime
+}
+
+class Evaluation {
+  - id : Long
+  - noteGlobale : int
+  - idUtilisateurEvaluateur : Long
+  - dateSaisie : LocalDateTime
+  --
+  + estComplete() : boolean
+}
+
+class NoteObjectif {
+  - id : Long
+  - note : int
+  - commentaire : String
+}
+
+PeriodeEvaluation "1" -- "0..*" Objectif
+Employe "1" -- "0..*" Objectif
+PeriodeEvaluation "1" -- "0..*" Evaluation
+Employe "1" -- "0..*" Evaluation
+
+note right of Evaluation
+  La note globale est **saisie manuellement**
+  par l’Owner (1..5) : pas de moyenne auto.
+end note
+
+Evaluation "1" *-- "1..*" NoteObjectif
+Objectif "1" -- "0..*" NoteObjectif
+
+
+' ---------- MODULE 5 ----------
+class ActifIt {
+  - id : Long
+  - nom : String
+  - typeActif : TypeActifIt
+  - numeroSerie : String
+  - description : String
+  - dateAcquisition : LocalDate
+  - statut : StatutActifIt
+}
+
+enum TypeActifIt <<enumeration>> {
+  LAPTOP
+  DESKTOP
+  MONITOR
+  PHONE
+  TABLET
+  ACCESSORY
+  OTHER
+}
+
+enum StatutActifIt <<enumeration>> {
+  DISPONIBLE
+  ASSIGNE
+  EN_MAINTENANCE
+  HORS_SERVICE
+}
+
+class AffectationActif {
+  - id : Long
+  - dateAffectation : LocalDateTime
+  - dateDesaffectation : LocalDateTime
+  - idUtilisateurExecutant : Long
+  --
+  + estEnCours() : boolean
+}
+
+ActifIt "1" *-- "0..*" AffectationActif
+Employe "1" -- "0..*" AffectationActif
+
+
+' ---------- MODULE 6 ----------
+class Notification {
+  - id : Long
+  - typeEvenement : TypeNotification
+  - message : String
+  - lu : boolean
+  - idReference : Long
+  - typeReference : String
+  - dateCreation : LocalDateTime
+}
+
+enum TypeNotification <<enumeration>> {
+  LEAVE_APPROVED
+  LEAVE_REFUSED
+  LEAVE_SUBMITTED
+  EVALUATION_SUBMITTED
+  ASSET_ASSIGNED
+}
+
+class JournalAudit {
+  - id : Long
+  - action : String
+  - typeEntite : String
+  - idEntite : Long
+  - ancienneValeurJson : String
+  - nouvelleValeurJson : String
+  - dateCreation : LocalDateTime
+}
+
+Utilisateur "1" -- "0..*" Notification : reçoit
+Utilisateur "0..1" -- "0..*" JournalAudit : agit en tant qu’acteur
+
+
+' ---------- Lien AUTH ↔ Employé (clé du modèle à 3 rôles) ----------
+Utilisateur "1" -- "0..1" Employe : compte lié
+
+note bottom of Utilisateur
+  **Règle :** un Employé a un compte Utilisateur lié.
+  Owner et RH **peuvent** ne pas avoir de fiche Employé.
+end note
+
+note bottom of JournalAudit
+  En base : `id_acteur` (FK), `ancienne_valeur` / `nouvelle_valeur` (JSON).
+  Immuable : INSERT uniquement.
+end note
+
+@enduml

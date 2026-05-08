@@ -1,0 +1,220 @@
+:root {
+  --eo-text: var(--text);
+  --eo-muted: var(--muted);
+  --eo-accent: var(--accent);
+  --eo-border: var(--border-mid);
+  --eo-box: var(--canvas);
+}
+
+.eoPage {
+  max-width: 960px;
+  margin: 0 auto;
+  background: var(--surface);
+  padding: 32px 56px 0;
+  min-height: 860px;
+  position: relative;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.eoSelectors {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 20px;
+}
+
+.eoEmployeeBtn {
+  height: 44px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-mid);
+  background: var(--surface);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px 0 10px;
+  font-size: 13px;
+  color: var(--eo-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 200ms ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.eoEmployeeBtn:hover {
+  border-color: var(--brand-steel);
+}
+
+.eoEmployeeIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: rgba(91, 150, 174, 0.15);
+  display: grid;
+  place-items: center;
+}
+
+.eoCaret {
+  margin-left: 6px;
+  opacity: 0.5;
+}
+
+.eoPeriods {
+  background: rgba(246, 243, 242, 0.8);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.eoPeriod {
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 0;
+  background: transparent;
+  padding: 0 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--eo-muted);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.eoPeriod:hover {
+  color: var(--brand-navy);
+}
+
+.eoPeriodActive {
+  background: var(--surface);
+  color: var(--brand-navy);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  font-weight: 700;
+}
+
+.eoDivider {
+  height: 1px;
+  background: var(--eo-border);
+  margin: 0 0 28px;
+}
+
+.eoObjectives {
+  display: grid;
+  gap: 32px;
+  padding-bottom: 40px;
+}
+
+.obj {
+  /* objective block */
+}
+
+.objTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.objHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.objBox {
+  background: rgba(246, 243, 242, 0.6);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 14px 16px 40px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  outline: none;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.objBox:focus-within {
+  border-color: var(--brand-cyan);
+  box-shadow: 0 0 0 3px rgba(91, 150, 174, 0.1);
+}
+
+.rate {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.rDot {
+  border-radius: 999px;
+  transition: transform 160ms ease;
+}
+
+.rDot:hover {
+  transform: scale(1.15);
+}
+
+.rDotFilled {
+  background: var(--brand-cyan);
+}
+
+.rDotEmpty {
+  background: rgba(193, 199, 207, 0.4);
+  border: 1px solid rgba(193, 199, 207, 0.5);
+}
+
+.eoBottom {
+  border-top: 1px solid var(--eo-border);
+  padding: 24px 0 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.eoBottomTitle {
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--eo-muted);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.eoSubmit {
+  height: 44px;
+  padding: 0 32px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--brand-cyan);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 160ms ease;
+  box-shadow: 0 2px 6px rgba(91, 150, 174, 0.3);
+}
+
+.eoSubmit:hover {
+  background: #4D8A9E;
+}
+
+.eoSubmit span {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (max-width: 1100px) {
+  .eoPage {
+    padding: 24px 16px 0;
+  }
+  .eoBottom {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+}

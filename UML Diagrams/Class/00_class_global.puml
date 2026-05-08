@@ -1,0 +1,201 @@
+@startuml NewDEV_RH_Class_Global
+' =====================================================================
+' NewDEV RH — Global Class Diagram (Domain Model)
+' Shows all 15 JPA entities and their relationships across the 6 modules.
+' This diagram is INTENTIONALLY light on attributes — see the per-module
+' diagrams (01..06) for full attribute and method details.
+' =====================================================================
+
+title NewDEV RH — Vue Globale du Modèle de Domaine
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+
+' --------- AUTH ---------
+package "AUTH" #E3F2FD {
+  class User {
+    - id : Long
+    - email : String
+    - passwordHash : String
+    - role : Role
+    - isActive : boolean
+  }
+  enum Role {
+    OWNER
+    RH
+    EMPLOYE
+  }
+}
+
+' --------- Module 1 ---------
+package "M1 — Employés" #E8F5E9 {
+  class Employee {
+    - id : Long
+    - fullName : String
+    - cin : String
+    - status : EmployeeStatus
+  }
+  class EmployeeHistory {
+    - id : Long
+    - changedAt : LocalDateTime
+  }
+  class HRDocument {
+    - id : Long
+    - filename : String
+    - documentType : DocumentType
+  }
+}
+
+' --------- Module 2 ---------
+package "M2 — Congés" #FFF8E1 {
+  class LeaveType {
+    - id : Long
+    - name : String
+    - annualQuotaDays : int
+  }
+  class LeaveBalance {
+    - id : Long
+    - year : int
+    - totalDays : double
+    - usedDays : double
+  }
+  class LeaveRequest {
+    - id : Long
+    - startDate : LocalDate
+    - endDate : LocalDate
+    - workingDays : int
+    - status : LeaveStatus
+  }
+}
+
+' --------- Module 3 ---------
+package "M3 — Évaluation" #F3E5F5 {
+  class EvaluationPeriod {
+    - id : Long
+    - name : String
+    - status : EvaluationPeriodStatus
+  }
+  class Objective {
+    - id : Long
+    - title : String
+  }
+  class Evaluation {
+    - id : Long
+    - globalScore : int
+  }
+  class ObjectiveScore {
+    - id : Long
+    - score : int
+    - comment : String
+  }
+}
+
+' --------- Module 5 ---------
+package "M5 — Actifs IT" #FFEBEE {
+  class Asset {
+    - id : Long
+    - serialNumber : String
+    - status : AssetStatus
+  }
+  class AssetAssignment {
+    - id : Long
+    - assignedAt : LocalDateTime
+    - unassignedAt : LocalDateTime
+  }
+}
+
+' --------- Module 6 ---------
+package "M6 — Notifications & Audit" #ECEFF1 {
+  class Notification {
+    - id : Long
+    - message : String
+    - isRead : boolean
+  }
+  class AuditLog {
+    - id : Long
+    - action : String
+    - entityType : String
+    - createdAt : LocalDateTime
+  }
+}
+
+' =====================================================================
+' RELATIONSHIPS
+' =====================================================================
+
+' AUTH ↔ Employees (one user account per employee)
+User "1" -- "0..1" Employee : owns >
+
+' Module 1 internal
+Employee "1" *-- "0..*" EmployeeHistory : history
+Employee "1" *-- "0..*" HRDocument : documents
+
+' Module 2
+LeaveType "1" -- "0..*" LeaveBalance
+Employee  "1" -- "0..*" LeaveBalance
+LeaveType "1" -- "0..*" LeaveRequest
+Employee  "1" -- "0..*" LeaveRequest
+User      "1" -- "0..*" LeaveRequest : decided by >
+
+' Module 3
+EvaluationPeriod "1" -- "0..*" Objective
+EvaluationPeriod "1" -- "0..*" Evaluation
+Employee         "1" -- "0..*" Objective
+Employee         "1" -- "0..*" Evaluation
+Evaluation "1" *-- "1..*" ObjectiveScore
+Objective  "1" -- "0..*" ObjectiveScore
+
+' Module 5
+Asset    "1" *-- "0..*" AssetAssignment : history
+Employee "1" -- "0..*" AssetAssignment
+
+' Module 6
+User "1" -- "0..*" Notification : recipient
+User "1" -- "0..*" AuditLog : actor
+
+' =====================================================================
+' GLOBAL DESIGN NOTES
+' =====================================================================
+note top of User
+  **3 rôles non chevauchants**
+  Sécurité côté serveur via @PreAuthorize
+  sur chaque endpoint Spring Boot.
+end note
+
+note bottom of EmployeeHistory
+  **Historique immuable** (INSERT-only)
+  Aucun UPDATE/DELETE permis :
+  audit trail des changements de poste.
+end note
+
+note bottom of AuditLog
+  **Log immuable** (INSERT-only)
+  Toute opération CRUD du système
+  y est tracée.
+end note
+
+note right of LeaveRequest
+  **Règle métier critique :**
+  workingDays calculé en
+  excluant **vendredi + samedi**
+  (semaine ouvrable marocaine).
+end note
+
+note right of Evaluation
+  **Contrainte UNIQUE**
+  (period_id, employee_id)
+  → 1 évaluation par employé
+  par période d'évaluation.
+end note
+
+note right of Asset
+  **serialNumber UNIQUE** au niveau DB.
+  Suppression physique interdite si
+  l'actif a un historique d'affectations
+  → on passe en HORS_SERVICE.
+end note
+
+@enduml

@@ -1,0 +1,110 @@
+.erhPage {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1.5rem 0;
+}
+
+.erhCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.erhCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.erhCardTitle {
+  font-family: var(--font-display, var(--font));
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.erhBadgeRO {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(52, 152, 219, 0.12);
+  color: #3498db;
+}
+
+.erhExportBtn {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.erhExportBtn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.erhTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.erhTable th {
+  text-align: left;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.erhTable td {
+  padding: 0.85rem 1.5rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+}
+.erhTable tr:last-child td {
+  border-bottom: none;
+}
+
+.thRight { text-align: right !important; }
+.tdRight { text-align: right; }
+.strong  { font-weight: 600; }
+.mono    { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem; }
+
+/* dots */
+.erhDots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.erhDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+.erhDotOn  { background: var(--accent); }
+.erhDotOff { background: var(--border); }
+
+/* status */
+.erhStatus {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+.erhStatus.ok   { background: rgba(39,174,96,0.12); color: #27ae60; }
+.erhStatus.wait { background: rgba(243,156,18,0.12); color: #f39c12; }

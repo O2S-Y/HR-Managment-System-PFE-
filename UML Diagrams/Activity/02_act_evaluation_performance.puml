@@ -1,0 +1,39 @@
+@startuml Activite_Evaluation_Performance
+/'
+  NewDEV RH — Diagramme d'activité
+  Flux : Évaluation de performance d'un employé
+  Acteurs : Owner, Système, Employé
+'/
+
+title Diagramme d'activité — Évaluation de performance
+
+|#FFF8E1| Owner |
+|#E3F2FD| Système |
+|#E8F5E9| Employé |
+
+|Owner|
+start
+:Sélectionner un employé\nà évaluer;
+
+:Saisir les notes par\nobjectif (1 à 5);
+
+:Saisir la note globale\n(1 à 5);
+
+|Système|
+if (Toutes les notes\nrenseignées ?) then (non)
+  :Afficher erreur :\n« Données incomplètes »;
+  |Owner|
+  stop
+else (oui)
+endif
+
+:Enregistrer l'évaluation;
+
+:Notifier l'employé\n« Évaluation disponible »;
+
+|Employé|
+:Consulter sa note globale\net les notes par objectif;
+
+stop
+
+@enduml

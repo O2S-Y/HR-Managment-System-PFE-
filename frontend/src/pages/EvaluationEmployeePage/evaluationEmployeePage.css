@@ -1,0 +1,224 @@
+:root {
+  --ee-text: var(--text);
+  --ee-muted: var(--muted);
+  --ee-accent: var(--accent);
+  --ee-border: var(--border-soft);
+  --ee-surface: var(--surface);
+  --ee-bg: var(--canvas);
+}
+
+.eePage {
+  background: var(--ee-surface);
+  padding: 40px 56px 40px;
+  max-width: 896px;
+  border: 1px solid var(--ee-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.eeHeader {
+  border-bottom: 1px solid var(--ee-border);
+  padding-bottom: 24px;
+  margin-bottom: 28px;
+}
+
+.eeNameRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eeName {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--brand-navy);
+  letter-spacing: -0.5px;
+}
+
+[data-theme='dark'] .eeName {
+  color: var(--text);
+}
+
+.eePeriodPill {
+  background: rgba(91, 150, 174, 0.15);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--brand-navy);
+}
+
+.eeSub {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--ee-muted);
+  font-weight: 500;
+}
+
+.eeOverall {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--ee-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.eeOverallTitle {
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--ee-muted);
+}
+
+.eeOverallScore {
+  margin-top: 4px;
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--brand-navy);
+  letter-spacing: -1px;
+  line-height: 1;
+  font-family: var(--font-display);
+}
+
+[data-theme='dark'] .eeOverallScore {
+  color: var(--text);
+  font-family: var(--font-display);
+}
+
+.eeOverallText {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand-cyan);
+}
+
+.eeDots {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.eeDot {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+}
+
+.eeDotOn {
+  background: var(--brand-cyan);
+}
+
+.eeDotOff {
+  background: rgba(193, 199, 207, 0.4);
+  border: 1px solid rgba(193, 199, 207, 0.5);
+}
+
+.eeSectionTitle {
+  border-bottom: 1px solid var(--ee-border);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--brand-navy);
+}
+
+[data-theme='dark'] .eeSectionTitle {
+  color: var(--text);
+}
+
+.eeObjectives {
+  display: grid;
+  gap: 20px;
+  padding-bottom: 32px;
+}
+
+.eeObj {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--ee-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+}
+
+.eeSideBar {
+  display: none; /* Replaced by card border */
+}
+
+.eeObjHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.eeObjTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.eeCommentBox {
+  position: relative;
+  padding-left: 14px;
+  border-left: 3px solid var(--brand-cyan);
+  background: rgba(246, 243, 242, 0.6);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 14px 16px 14px 18px;
+}
+
+.eeCommentLabel {
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--ee-muted);
+  margin-bottom: 8px;
+}
+
+.eeCommentText {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.65;
+}
+
+[data-theme='dark'] .eeCommentText {
+  color: var(--muted);
+}
+
+.eeFooter {
+  border-top: 1px solid var(--ee-border);
+  padding-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.eeFooterItem {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@media (max-width: 1100px) {
+  .eePage {
+    padding: 24px 16px 40px;
+  }
+  .eeOverall {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+}

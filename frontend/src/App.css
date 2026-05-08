@@ -1,0 +1,6 @@
+.app {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 48px 16px;
+}

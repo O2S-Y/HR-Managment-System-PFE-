@@ -1,0 +1,44 @@
+@startuml Activite_Validation_Conge
+/'
+  NewDEV RH — Diagramme d'activité
+  Flux : Validation d'une demande de congé par le Owner
+  Acteurs : Owner, Système
+'/
+
+title Diagramme d'activité — Validation de congé
+
+|#FFF8E1| Owner |
+|#E3F2FD| Système |
+
+|Owner|
+start
+:Consulter les demandes\nen attente;
+
+:Sélectionner une demande\nà traiter;
+
+:Examiner les détails\n(employé, type, dates);
+
+if (Décision ?) then (Approuver)
+  :Saisir un commentaire\n(optionnel);
+
+  |Système|
+  :Mettre le statut\n= **APPROUVÉ**;
+
+  :Mettre à jour le solde\nde congés de l'employé;
+
+  :Notifier l'employé\n« Congé approuvé »;
+
+else (Refuser)
+  |Owner|
+  :Saisir un motif\nde refus (obligatoire);
+
+  |Système|
+  :Mettre le statut\n= **REFUSÉ**;
+
+  :Notifier l'employé\n« Congé refusé »;
+
+endif
+
+stop
+
+@enduml

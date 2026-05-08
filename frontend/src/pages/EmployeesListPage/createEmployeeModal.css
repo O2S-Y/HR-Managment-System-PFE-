@@ -1,0 +1,230 @@
+:root {
+  --cem-text: var(--text);
+  --cem-muted: var(--muted);
+  --cem-border: var(--border-soft);
+}
+
+.cemOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.cemBackdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(27, 58, 75, 0.15);
+  backdrop-filter: blur(6px);
+}
+
+[data-theme='dark'] .cemBackdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.cemPanel {
+  position: relative;
+  width: min(760px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 18px 60px rgba(27, 58, 75, 0.18);
+  overflow: hidden;
+  animation: cemPop 180ms ease-out;
+}
+
+@keyframes cemPop {
+  from {
+    transform: translateY(8px) scale(0.985);
+    opacity: 0.85;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.cemHead {
+  padding: 18px 22px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--cem-border);
+  background: rgba(246, 243, 242, 0.5);
+}
+
+[data-theme='dark'] .cemHead {
+  background: var(--surface-2);
+}
+
+.cemTitle {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: var(--brand-navy);
+}
+
+[data-theme='dark'] .cemTitle {
+  color: var(--cem-text);
+}
+
+.cemSubtitle {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--cem-muted);
+}
+
+.cemClose {
+  height: 34px;
+  width: 34px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-mid);
+  background: var(--surface);
+  color: var(--cem-muted);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.cemClose:hover {
+  border-color: var(--brand-cyan);
+  color: var(--brand-navy);
+}
+
+.cemBody {
+  padding: 18px 22px 0;
+}
+
+.cemGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 16px;
+}
+
+.cemField {
+  display: grid;
+  gap: 8px;
+}
+
+.cemFieldDisabled {
+  opacity: 0.65;
+}
+
+.cemLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-navy);
+}
+
+[data-theme='dark'] .cemLabel {
+  color: var(--cem-text);
+}
+
+.cemInput {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-mid);
+  background: var(--surface);
+  outline: none;
+  font-size: 13px;
+  color: var(--cem-text);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.cemInput::placeholder {
+  color: var(--cem-muted);
+  opacity: 0.75;
+}
+
+.cemInput:focus {
+  border-color: var(--brand-cyan);
+  box-shadow: 0 0 0 3px rgba(91, 150, 174, 0.15);
+}
+
+.cemInput:disabled {
+  cursor: not-allowed;
+  background: rgba(246, 243, 242, 0.4);
+}
+
+[data-theme='dark'] .cemInput:disabled {
+  background: rgba(15, 23, 31, 0.45);
+}
+
+.cemError {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(239, 68, 68, 0.08);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  font-size: 13px;
+}
+
+.cemFooter {
+  margin-top: 18px;
+  padding: 16px 22px;
+  border-top: 1px solid var(--cem-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: rgba(246, 243, 242, 0.3);
+}
+
+[data-theme='dark'] .cemFooter {
+  background: var(--surface-2);
+}
+
+.cemSecondary {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-mid);
+  background: var(--surface);
+  color: var(--cem-muted);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.cemSecondary:hover {
+  border-color: var(--brand-cyan);
+  color: var(--brand-navy);
+}
+
+.cemPrimary {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 0;
+  background: var(--brand-cyan);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 160ms ease, opacity 160ms ease;
+  box-shadow: 0 1px 3px rgba(91, 150, 174, 0.25);
+}
+
+.cemPrimary:hover {
+  background: #4D8A9E;
+}
+
+.cemPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 720px) {
+  .cemGrid {
+    grid-template-columns: 1fr;
+  }
+}
+

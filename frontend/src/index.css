@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap');
+
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --border: #d1d5db;
+  --primary: #2f4658;
+  --primary-contrast: #ffffff;
+
+  /* NewDEV RH app surfaces (light) — warm tone from original */
+  --canvas: #fcf9f8;
+  --sidebar: #f6f3f2;
+  --surface-2: #f6f3f2;
+  --border-soft: rgba(193, 199, 207, 0.15);
+  --border-mid: rgba(193, 199, 207, 0.3);
+  --accent: #286185;
+  --accent-soft: rgba(40, 97, 133, 0.12);
+
+  /* Brand colors — cyan muted to match "Dev" in logo */
+  --brand-cyan: #5B96AE;
+  --brand-steel: #5D8AA8;
+  --brand-gray: #9E9E9E;
+  --brand-navy: #1B3A4B;
+  --brand-red: #b04a4a;
+
+  --radius-pill: 24px;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
+
+  /* Typography */
+  --font-display: 'Roboto', 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  font-family: var(--font-body);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme='dark'] {
+  --bg: #0b0f14;
+  --canvas: #0f1418;
+  --sidebar: #11181f;
+  --surface: #121b24;
+  --surface-2: #0f171f;
+
+  --text: #e6edf3;
+  --muted: rgba(230, 237, 243, 0.7);
+  --border: rgba(230, 237, 243, 0.18);
+  --border-soft: rgba(230, 237, 243, 0.12);
+  --border-mid: rgba(230, 237, 243, 0.18);
+
+  --primary: #2b5b7a;
+  --primary-contrast: #ffffff;
+
+  --accent: #69a7cf;
+  --accent-soft: rgba(105, 167, 207, 0.16);
+
+  --brand-cyan: #6AABB8;
+  --brand-steel: #5D8AA8;
+  --brand-navy: #c5dae6;
+  --brand-red: #c96b6b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--text);
+}
+
+#root {
+  min-height: 100svh;
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

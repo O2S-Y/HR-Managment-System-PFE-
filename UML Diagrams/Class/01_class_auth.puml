@@ -1,0 +1,63 @@
+@startuml NewDEV_RH_Class_Auth
+' =====================================================================
+' Module AUTH — Authentification & Comptes Utilisateurs
+' Responsable : Spring Security + JWT
+' Une seule entité (User) + un enum (Role).
+' =====================================================================
+
+title Module AUTH — Diagramme de Classes
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam shadowing false
+
+class User <<Entity>> {
+  - id : Long
+  - email : String <<unique>>
+  - passwordHash : String
+  - role : Role
+  - isActive : boolean
+  - createdAt : LocalDateTime
+  --
+  + isOwner() : boolean
+  + isRH() : boolean
+  + isEmploye() : boolean
+  + disable() : void
+  + changeRole(newRole : Role) : void
+}
+
+enum Role {
+  OWNER
+  RH
+  EMPLOYE
+}
+
+User --> Role : role
+
+note top of User
+  **Contrainte DB :**
+  email UNIQUE (index unique)
+  passwordHash : BCrypt (≥ 60 chars)
+end note
+
+note right of Role
+  **Modèle d'autorité strict :**
+  - OWNER : décideur final (validations, évaluations)
+  - RH : administrateur de données (CRUD, configuration)
+  - EMPLOYE : consommateur (ses propres données seulement)
+
+  Vérifié côté serveur via :
+  @PreAuthorize("hasRole('OWNER')")
+end note
+
+note bottom of User
+  **Pourquoi `isActive` au lieu d'un DELETE ?**
+  Aucune suppression physique n'est jamais
+  permise. Désactiver un compte le rend
+  inutilisable mais préserve l'intégrité
+  référentielle (l'utilisateur peut être
+  cité dans `audit_log`, `leave_requests.decided_by`,
+  etc.).
+end note
+
+@enduml
