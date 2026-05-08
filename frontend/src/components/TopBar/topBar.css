@@ -338,7 +338,7 @@
   flex-shrink: 0;
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 1101px) {
   .tbRoot {
     flex-wrap: nowrap;
     padding-top: 0;
@@ -351,9 +351,66 @@
   }
 }
 
-@media (max-width: 520px) {
+/* ── Tablet ≤1100px ── */
+@media (max-width: 1100px) {
+  .tbRoot {
+    min-height: 56px;
+    gap: 10px;
+    padding: 8px 16px 8px 56px; /* 56px left to clear hamburger btn */
+    flex-wrap: wrap;
+  }
+
+  .tbTitle {
+    font-size: 18px;
+  }
+
+  .tbCenter {
+    order: 10;
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+
+  .tbSearch {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* ── Small Tablet ≤768px ── */
+@media (max-width: 768px) {
+  .tbRoot {
+    min-height: 52px;
+    gap: 8px;
+    padding: 6px 12px 6px 56px;
+    flex-wrap: nowrap;
+  }
+
+  .tbTitle {
+    font-size: 16px;
+  }
+
+  .tbSubtitle {
+    display: none;
+  }
+
+  /* Hide the center section (search + tabs) on small screens */
+  .tbCenter {
+    display: none;
+  }
+
+  .tbRight {
+    gap: 8px;
+  }
+
+  .tbDivider {
+    display: none;
+  }
+
   .tbUser {
-    max-width: min(200px, 72vw);
+    max-width: min(180px, 40vw);
+    padding: 0 8px 0 4px;
+    height: 36px;
+    gap: 6px;
   }
 
   .tbAvatar {
@@ -362,7 +419,87 @@
     font-size: 9px;
   }
 
+  .tbUserName {
+    font-size: 12px;
+  }
+
+  .tbUserRole {
+    font-size: 10px;
+  }
+
+  .tbIconBtn {
+    height: 32px;
+    width: 32px;
+  }
+}
+
+/* ── Mobile ≤520px ── */
+@media (max-width: 520px) {
+  .tbRoot {
+    min-height: 48px;
+    gap: 6px;
+    padding: 4px 8px 4px 52px;
+  }
+
+  .tbTitle {
+    font-size: 14px;
+  }
+
+  .tbLeft {
+    gap: 8px;
+    flex: 1 1 0;
+  }
+
+  .tbRight {
+    gap: 6px;
+  }
+
+  /* Hide user text, show only avatar */
+  .tbUserText {
+    display: none;
+  }
+
   .tbCaret {
     display: none;
   }
+
+  .tbUser {
+    max-width: none;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
+    border-radius: var(--radius-md);
+  }
+
+  .tbAvatar {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+  }
+
+  .tbIconBtn {
+    height: 30px;
+    width: 30px;
+  }
+
+  .tbIconBtn::after {
+    top: 4px;
+    right: 4px;
+    width: 6px;
+    height: 6px;
+  }
 }
+
+/* ── Tiny ≤380px ── */
+@media (max-width: 380px) {
+  .tbRoot {
+    padding-left: 48px;
+    padding-right: 6px;
+  }
+
+  .tbTitle {
+    font-size: 13px;
+  }
+}
+

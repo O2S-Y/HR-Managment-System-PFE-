@@ -135,23 +135,28 @@
 
 /* Theme toggle moved to TopBar dropdown */
 
+/* ── Responsive: ≤1100px — sidebar becomes drawer ── */
 @media (max-width: 1100px) {
   .shellRoot {
     grid-template-columns: 1fr;
   }
+
   .shellSidebar {
-    display: flex;
     position: fixed;
     left: 0;
     top: 0;
     bottom: 0;
-    width: min(320px, 86vw);
+    width: min(280px, 82vw);
     transform: translateX(-110%);
-    transition: transform 220ms ease;
+    transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
+
   .shellSidebarOpen {
     transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
   }
+
   .shellRootSidebarOpen {
     overflow: hidden;
   }
@@ -160,9 +165,17 @@
     position: fixed;
     inset: 0;
     z-index: 19;
-    background: rgba(0, 0, 0, 0.35);
+    background: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0);
     border: 0;
     padding: 0;
+    cursor: default;
+    transition: background 280ms ease, backdrop-filter 280ms ease;
+  }
+
+  .shellRootSidebarOpen .shellBackdrop {
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(2px);
   }
 
   .shellMenuBtn {
@@ -179,7 +192,18 @@
     display: grid;
     place-items: center;
     cursor: pointer;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: background 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  }
+
+  .shellMenuBtn:hover {
+    background: var(--accent-soft);
+    border-color: var(--brand-cyan);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .shellMenuBtn:active {
+    transform: scale(0.95);
   }
 
   .shellHeader,
@@ -189,9 +213,36 @@
   }
 }
 
+/* ── ≤768px — tighter content padding ── */
+@media (max-width: 768px) {
+  .shellContent {
+    padding: 16px 12px 32px;
+  }
+}
+
+/* ── ≤520px — mobile-first spacing ── */
+@media (max-width: 520px) {
+  .shellContent {
+    padding: 12px 8px 24px;
+  }
+
+  .shellSidebar {
+    width: min(260px, 85vw);
+  }
+
+  .shellMenuBtn {
+    top: 8px;
+    left: 8px;
+    height: 36px;
+    width: 36px;
+  }
+}
+
+/* ── Desktop: ≥1101px — sidebar always visible ── */
 @media (min-width: 1101px) {
   .shellBackdrop,
   .shellMenuBtn {
     display: none;
   }
 }
+
