@@ -43,7 +43,6 @@ const assets = [
     assignedTo: 'Thomas Dubois',
     status: 'Assigné',
     tone: 'blue',
-    expanded: true,
   },
   {
     name: 'Logitech MX Master 3S',
@@ -76,11 +75,25 @@ export function AssetsInventoryPage() {
 
   const [localAssets, setLocalAssets] = useState(assets)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [activeChip, setActiveChip] = useState('TOUS')
+  const [expandedRows, setExpandedRows] = useState([])
+
+  const toggleExpand = (serial) => {
+    setExpandedRows(prev =>
+      prev.includes(serial) ? prev.filter(s => s !== serial) : [...prev, serial]
+    )
+  }
 
   // M5_UC4: Employee only sees their own assigned assets
-  const displayAssets = isEmployee
-    ? localAssets.filter(a => a.status === 'Assigné')
-    : localAssets
+  // Also apply chip filter
+  const displayAssets = localAssets.filter(a => {
+    if (isEmployee && a.status !== 'Assigné') return false
+    if (activeChip === 'TOUS') return true
+    if (activeChip === 'DISPONIBLE' && a.status !== 'Disponible') return false
+    if (activeChip === 'ASSIGNÉ' && a.status !== 'Assigné') return false
+    if (activeChip === 'EN MAINTENANCE' && a.status !== 'En maintenance') return false
+    return true
+  })
 
   return (
     <AppShell
@@ -108,8 +121,13 @@ export function AssetsInventoryPage() {
         </div>
 
         <div className="aiChips">
-          {chips.map((c, idx) => (
-            <button key={c} className={idx === 0 ? 'aiChip aiChipActive' : 'aiChip'} type="button">
+          {chips.map((c) => (
+            <button
+              key={c}
+              className={c === activeChip ? 'aiChip aiChipActive' : 'aiChip'}
+              type="button"
+              onClick={() => setActiveChip(c)}
+            >
               {c}
             </button>
           ))}
@@ -130,8 +148,11 @@ export function AssetsInventoryPage() {
             </thead>
             <tbody>
               {displayAssets.map((a) => (
-                <Fragment key={a.name}>
-                  <tr>
+                <Fragment key={a.serial}>
+                  <tr
+                    onClick={() => toggleExpand(a.serial)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <td className="strong">{a.name}</td>
                     <td>{a.type}</td>
                     <td className="mono">{a.serial}</td>
@@ -143,9 +164,9 @@ export function AssetsInventoryPage() {
                       <span className={`status ${a.tone}`}>{a.status}</span>
                     </td>
                     {/* M5_UC2: Assigner/Désassigner — RH only */}
-                    {isRH && <td className="tdRight">…</td>}
+                    {isRH && <td className="tdRight" onClick={(e) => e.stopPropagation()}>…</td>}
                   </tr>
-                  {a.expanded ? (
+                  {expandedRows.includes(a.serial) ? (
                     <tr className="expandRow">
                       <td colSpan={6}>
                         <div className="expandBox">

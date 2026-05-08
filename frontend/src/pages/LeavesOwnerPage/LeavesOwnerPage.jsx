@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { AppShell } from '../../components/AppShell/AppShell'
 import { TopBar } from '../../components/TopBar/TopBar'
 import { useAuth } from '../../contexts/AuthContext'
@@ -19,6 +20,24 @@ export function LeavesOwnerPage() {
   const { user } = useAuth()
   const isOwner = user?.role === 'OWNER'
   const isRH = user?.role === 'RH'
+
+  const [activeFilter, setActiveFilter] = useState('Tous')
+  const [localPending, setLocalPending] = useState(pending)
+  const [localHistory, setLocalHistory] = useState(history)
+
+  const handleAction = (request, action) => {
+    // Remove from pending
+    setLocalPending(prev => prev.filter(p => p.name !== request.name || p.period !== request.period))
+    // Add to history
+    setLocalHistory(prev => [
+      { name: request.name, type: request.type, period: request.period, status: action },
+      ...prev
+    ])
+  }
+
+  const filteredPending = localPending.filter(
+    p => activeFilter === 'Tous' || p.type.toLowerCase() === activeFilter.toLowerCase()
+  )
 
   return (
     <AppShell
@@ -47,8 +66,13 @@ export function LeavesOwnerPage() {
         <div className="filterRow">
           <div className="filterLabel">TYPE</div>
           <div className="chips">
-            {filters.map((f, i) => (
-              <button key={f} className={i === 0 ? 'chip chipActive' : 'chip'} type="button">
+            {filters.map((f) => (
+              <button
+                key={f}
+                className={f === activeFilter ? 'chip chipActive' : 'chip'}
+                type="button"
+                onClick={() => setActiveFilter(f)}
+              >
                 {f}
               </button>
             ))}
@@ -58,13 +82,18 @@ export function LeavesOwnerPage() {
         <div className="sectionHead">
           <div className="sectionKicker">À TRAITER</div>
           <div className="sectionTitle">Demandes en attente</div>
-          <div className="countPill">3 demandes</div>
+          <div className="countPill">{filteredPending.length} demande{filteredPending.length !== 1 ? 's' : ''}</div>
         </div>
 
         <section className="pendingCard">
-          {pending.map((p) => (
-            <div key={p.name} className="pendingRow">
-              <div className="miniAvatar">{p.initials}</div>
+          {filteredPending.length === 0 ? (
+            <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)' }}>
+              Aucune demande en attente.
+            </div>
+          ) : (
+            filteredPending.map((p) => (
+              <div key={p.name + p.period} className="pendingRow">
+                <div className="miniAvatar">{p.initials}</div>
               <div className="pMeta">
                 <div className="pName">{p.name}</div>
                 <div className="pTitle">{p.title}</div>
@@ -78,10 +107,10 @@ export function LeavesOwnerPage() {
               {/* M2_UC3: Approuver/Refuser — Owner only */}
               {isOwner && (
                 <div className="actions">
-                  <button className="btnGhost" type="button">
+                  <button className="btnGhost" type="button" onClick={() => handleAction(p, 'Refusé')}>
                     Refuser
                   </button>
-                  <button className="btnPrimary" type="button">
+                  <button className="btnPrimary" type="button" onClick={() => handleAction(p, 'Approuvé')}>
                     Approuver
                   </button>
                 </div>
@@ -89,13 +118,13 @@ export function LeavesOwnerPage() {
               {/* M2_UC5: Ajuster manuellement les soldes — RH only */}
               {isRH && (
                 <div className="actions">
-                  <button className="btnPrimary" type="button">
+                  <button className="btnPrimary" type="button" onClick={() => alert('Ajuster solde pour ' + p.name)}>
                     Ajuster solde
                   </button>
                 </div>
               )}
             </div>
-          ))}
+          )))}
         </section>
 
         <section className="history">
@@ -103,8 +132,8 @@ export function LeavesOwnerPage() {
             <div className="historyTitle">HISTORIQUE DES DÉCISIONS RÉCENTES</div>
             <div className="chev">⌄</div>
           </div>
-          {history.map((h) => (
-            <div key={h.name + h.period} className="historyRow">
+          {localHistory.map((h, i) => (
+            <div key={h.name + h.period + i} className="historyRow">
               <div className="hName">{h.name}</div>
               <div className="hType">{h.type}</div>
               <div className="hPeriod">{h.period}</div>
