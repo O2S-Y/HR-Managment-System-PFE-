@@ -12,6 +12,12 @@ import { EvaluationEmployeePage } from '../pages/EvaluationEmployeePage/Evaluati
 import { AssetsInventoryPage } from '../pages/AssetsInventoryPage/AssetsInventoryPage'
 import { AssetsMyPage } from '../pages/AssetsMyPage/AssetsMyPage'
 import { SettingsPage } from '../pages/SettingsPage/SettingsPage'
+import { AttendancePage } from '../pages/AttendancePage/AttendancePage'
+import { AttendanceMyPage } from '../pages/AttendanceMyPage/AttendanceMyPage'
+import { PayrollPage } from '../pages/PayrollPage/PayrollPage'
+import { PayslipsMyPage } from '../pages/PayslipsMyPage/PayslipsMyPage'
+import { AuditPage } from '../pages/AuditPage/AuditPage'
+import { NotificationsPanelPage } from '../pages/NotificationsPanelPage/NotificationsPanelPage'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 
 export function AppRoutes() {
@@ -41,9 +47,21 @@ export function AppRoutes() {
         <Route path="/employees/me" element={<EmployeeProfilePage />} />
       </Route>
 
+      {/* ── Module 1 — Pointage (Présence) ──
+           RH/Owner : Vérifier et gérer le pointage des employés */}
+      <Route element={<ProtectedRoute allowedRoles={['RH', 'OWNER']} />}>
+        <Route path="/attendance" element={<AttendancePage />} />
+      </Route>
+
+      {/* ── Module 1 — Mon Pointage (Employé) ──
+           Employé : Pointer son arrivée et départ (1 fois par jour) */}
+      <Route element={<ProtectedRoute allowedRoles={['EMPLOYE']} />}>
+        <Route path="/attendance/me" element={<AttendanceMyPage />} />
+      </Route>
+
       {/* ── Module 2 — Congés : Owner ──
            Approuver/Refuser les demandes */}
-      <Route element={<ProtectedRoute allowedRoles={['OWNER']} />}>
+      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'RH']} />}>
         <Route path="/leaves/owner" element={<LeavesOwnerPage />} />
       </Route>
 
@@ -78,21 +96,46 @@ export function AppRoutes() {
       </Route>
 
       {/* ── Module 5 — Actifs IT : Owner + RH ──
-           RH    : Gérer inventaire (CRUD) + Assigner/Désassigner + Consulter inventaire
+           RH    : Gérer inventaire (CRUD) + Affecter/Désaffecter + Consulter inventaire
            Owner : Consulter inventaire et historique (lecture seule) */}
       <Route element={<ProtectedRoute allowedRoles={['OWNER', 'RH']} />}>
         <Route path="/assets" element={<AssetsInventoryPage />} />
       </Route>
 
       {/* ── Module 5 — Actifs IT : Employé ──
-           Consulter ses actifs assignés */}
+           Consulter ses actifs affectés */}
       <Route element={<ProtectedRoute allowedRoles={['EMPLOYE']} />}>
         <Route path="/assets/me" element={<AssetsMyPage />} />
+      </Route>
+
+      {/* ── Module 7 — Gestion de la Paie : RH + Owner ──
+           RH    : Configurer salaire, générer bulletins
+           Owner : Consulter la masse salariale (lecture seule) */}
+      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'RH']} />}>
+        <Route path="/payroll" element={<PayrollPage />} />
+      </Route>
+
+      {/* ── Module 7 — Mes Bulletins de Paie : Employé ──
+           Consulter ses propres bulletins de paie */}
+      <Route element={<ProtectedRoute allowedRoles={['EMPLOYE', 'RH']} />}>
+        <Route path="/payroll/me" element={<PayslipsMyPage />} />
+      </Route>
+
+      {/* ── Module 6 — Notifications & Communication ──
+           Tous : consulter/marquer ses notifications
+           RH/Owner : envoyer un message direct + diffuser une annonce */}
+      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'RH', 'EMPLOYE']} />}>
+        <Route path="/notifications" element={<NotificationsPanelPage />} />
       </Route>
 
       {/* ── Module AUTH — Settings (tous les utilisateurs authentifiés) ── */}
       <Route element={<ProtectedRoute allowedRoles={['OWNER', 'RH', 'EMPLOYE']} />}>
         <Route path="/settings" element={<SettingsPage />} />
+      </Route>
+
+      {/* ── Module 6 — Audit (Owner uniquement) ── */}
+      <Route element={<ProtectedRoute allowedRoles={['OWNER']} />}>
+        <Route path="/audit" element={<AuditPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/login" replace />} />

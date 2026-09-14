@@ -1,0 +1,283 @@
+.myAttMain {
+  padding-top: 24px;
+  max-width: 720px;
+}
+
+/* Today's Card */
+.myAttTodayCard {
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 24px rgba(27, 58, 75, 0.06);
+}
+
+.myAttTodayHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.myAttTodayIcon {
+  width: 28px;
+  height: 28px;
+  color: var(--brand-cyan);
+}
+
+.myAttTodayTitle {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--brand-navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+[data-theme='dark'] .myAttTodayTitle {
+  color: var(--text);
+}
+
+.myAttTodayDate {
+  font-size: 13px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  margin-top: 2px;
+}
+
+/* Action Buttons Row */
+.myAttButtonRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.myAttActionBtn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 24px;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-mid);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 200ms ease;
+  text-align: left;
+}
+
+.myAttActionBtn svg {
+  flex-shrink: 0;
+}
+
+.myAttActionBtnText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.myAttActionLabel {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.myAttActionHint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.myAttActionTime {
+  font-size: 20px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  color: #15803d;
+}
+
+/* Arrival button */
+.myAttArrivalBtn {
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #15803d;
+}
+
+.myAttArrivalBtn:not(:disabled):hover {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.06);
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Departure button */
+.myAttDepartBtn {
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #1d4ed8;
+}
+
+.myAttDepartBtn:not(:disabled):hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.06);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Done state */
+.myAttActionBtnDone {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.04);
+  cursor: default;
+  opacity: 0.9;
+}
+
+/* Locked state (departure before arrival) */
+.myAttActionBtnLocked {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-color: var(--border-soft);
+}
+
+.myAttActionBtnLocked .myAttActionLabel {
+  color: var(--muted);
+}
+
+/* Complete message */
+.myAttCompleteMsg {
+  padding: 12px 16px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: var(--radius-md);
+  color: #15803d;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* History Section */
+.myAttHistorySection {
+  margin-bottom: 24px;
+}
+
+.myAttHistoryTitle {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  color: var(--brand-navy);
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+[data-theme='dark'] .myAttHistoryTitle {
+  color: var(--text);
+}
+
+.myAttTableWrap {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.myAttTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.myAttTable thead th {
+  padding: 14px 20px;
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  background: rgba(246, 243, 242, 0.5);
+  border-bottom: 1px solid var(--border-mid);
+  text-align: left;
+}
+
+[data-theme='dark'] .myAttTable thead th {
+  background: var(--surface-2);
+}
+
+.myAttTable tbody td {
+  padding: 14px 20px;
+  font-size: 13px;
+  color: var(--muted);
+  border-top: 1px solid rgba(193, 199, 207, 0.1);
+}
+
+.myAttTdMono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.myAttThRight {
+  text-align: right;
+}
+
+.myAttTimeBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.myAttTimeBadgeIn {
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+}
+
+.myAttTimeBadgeOut {
+  background: rgba(59, 130, 246, 0.12);
+  color: #1d4ed8;
+}
+
+.myAttTimeBadgeMissing {
+  background: rgba(193, 199, 207, 0.2);
+  color: var(--muted);
+}
+
+.myAttStatusPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.myAttStatusComplete {
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+}
+
+.myAttStatusPartial {
+  background: rgba(234, 179, 8, 0.12);
+  color: #92400e;
+}
+
+/* Error message banner */
+.myAttErrorMsg {
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  color: #b91c1c;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .myAttButtonRow {
+    grid-template-columns: 1fr;
+  }
+}

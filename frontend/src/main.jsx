@@ -6,9 +6,11 @@ import { AppRoutes } from './routes/AppRoutes'
 import { ThemeProvider } from './theme/ThemeProvider'
 import { NotificationsProvider } from './notifications/NotificationsProvider'
 import { AuthProvider } from './contexts/AuthContext'
+import { Toaster } from 'react-hot-toast'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <Toaster position="top-right" />
     <BrowserRouter>
       <ThemeProvider>
         <NotificationsProvider>

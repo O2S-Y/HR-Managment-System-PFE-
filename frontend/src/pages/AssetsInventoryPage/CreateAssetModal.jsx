@@ -13,9 +13,16 @@ const TYPE_ACTIF_OPTIONS = [
 
 const STATUT_OPTIONS = [
   { value: 'DISPONIBLE', label: 'Disponible' },
-  { value: 'ASSIGNE', label: 'Assigné' },
+  { value: 'ASSIGNE', label: 'Affecté' },
   { value: 'EN_MAINTENANCE', label: 'En maintenance' },
   { value: 'HORS_SERVICE', label: 'Hors service' },
+]
+
+const ETAT_OPTIONS = [
+  { value: 'NEUF', label: 'Neuf' },
+  { value: 'BON', label: 'Bon' },
+  { value: 'USE', label: 'Usé' },
+  { value: 'DEFECTUEUX', label: 'Défectueux' },
 ]
 
 export function CreateAssetModal({ open, onClose, onCreate }) {
@@ -25,6 +32,7 @@ export function CreateAssetModal({ open, onClose, onCreate }) {
   const [description, setDescription] = useState('')
   const [dateAcquisition, setDateAcquisition] = useState('')
   const [statut, setStatut] = useState('DISPONIBLE')
+  const [etat, setEtat] = useState('BON')
   const [error, setError] = useState('')
 
   const canSubmit = useMemo(() => {
@@ -33,8 +41,9 @@ export function CreateAssetModal({ open, onClose, onCreate }) {
     if (!numeroSerie.trim()) return false
     if (!dateAcquisition) return false
     if (!statut) return false
+    if (!etat) return false
     return true
-  }, [nom, typeActif, numeroSerie, dateAcquisition, statut])
+  }, [nom, typeActif, numeroSerie, dateAcquisition, statut, etat])
 
   useEffect(() => {
     if (!open) return
@@ -62,18 +71,18 @@ export function CreateAssetModal({ open, onClose, onCreate }) {
 
     const payload = {
       nom: nom.trim(),
-      typeActif,
-      numeroSerie: numeroSerie.trim(),
-      description: description.trim(),
-      dateAcquisition,
+      categorie: typeActif,
+      reference: numeroSerie.trim(),
+      dateAchat: dateAcquisition,
+      etat,
       statut,
     }
 
     onCreate({
       name: payload.nom,
-      type: TYPE_ACTIF_OPTIONS.find(o => o.value === payload.typeActif)?.label || payload.typeActif,
-      serial: payload.numeroSerie,
-      assignedTo: payload.statut === 'ASSIGNE' ? 'À définir' : 'Non assigné',
+      type: TYPE_ACTIF_OPTIONS.find(o => o.value === payload.categorie)?.label || payload.categorie,
+      serial: payload.reference,
+      assignedTo: payload.statut === 'ASSIGNE' ? 'À définir' : 'Non affecté',
       status: STATUT_OPTIONS.find(o => o.value === payload.statut)?.label || payload.statut,
       tone: payload.statut === 'DISPONIBLE' ? 'green' : payload.statut === 'ASSIGNE' ? 'blue' : payload.statut === 'EN_MAINTENANCE' ? 'orange' : 'red',
       _domain: payload,
@@ -86,6 +95,7 @@ export function CreateAssetModal({ open, onClose, onCreate }) {
     setDescription('')
     setDateAcquisition('')
     setStatut('DISPONIBLE')
+    setEtat('BON')
   }
 
   return (
@@ -136,10 +146,21 @@ export function CreateAssetModal({ open, onClose, onCreate }) {
               <input className="camInput" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Détails supplémentaires (couleur, état...)" />
             </label>
 
-            <label className="camField" style={{ gridColumn: '1 / -1' }}>
+            <label className="camField">
               <span className="camLabel">Statut</span>
               <select className="camInput" value={statut} onChange={(e) => setStatut(e.target.value)}>
                 {STATUT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="camField">
+              <span className="camLabel">État (Condition)</span>
+              <select className="camInput" value={etat} onChange={(e) => setEtat(e.target.value)}>
+                {ETAT_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>
                     {o.label}
                   </option>

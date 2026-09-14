@@ -244,6 +244,23 @@
   height: 36px;
   border-radius: 999px;
   background: rgba(91, 150, 174, 0.18);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--brand-navy);
+  overflow: hidden;
+}
+
+[data-theme='dark'] .evalAvatar {
+  color: var(--brand-cyan);
+}
+
+.evalAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 999px;
 }
 
 .evalName {

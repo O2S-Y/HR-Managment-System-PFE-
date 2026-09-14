@@ -107,3 +107,42 @@
 .laEditBtn:hover {
   text-decoration: underline;
 }
+
+.laInlineInput {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-mid, #d1d5db);
+  background: var(--surface, #fff);
+  color: var(--text, #1a1a1a);
+  font-size: 0.82rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 160ms ease;
+  width: 100%;
+  max-width: 180px;
+}
+.laInlineInput:focus {
+  border-color: var(--accent, #5b96ae);
+}
+
+.laSaveBtn {
+  color: #16a34a;
+  font-weight: 700;
+}
+.laSaveBtn:hover {
+  color: #15803d;
+}
+
+.laGridContainer {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .laGridContainer {
+    grid-template-columns: 1fr;
+  }
+}

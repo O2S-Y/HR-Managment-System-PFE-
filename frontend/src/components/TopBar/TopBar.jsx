@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme } from '../../theme/ThemeProvider'
+import { getPhotoUrl } from '../../services/http'
 import './topBar.css'
 
 function initialsFromName(name) {
@@ -20,17 +21,6 @@ function IconBell(props) {
       <path
         fill="currentColor"
         d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 0 0-5-6.71V3a2 2 0 1 0-4 0v1.29A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2Z"
-      />
-    </svg>
-  )
-}
-
-function IconSearch(props) {
-  return (
-    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" {...props}>
-      <path
-        fill="currentColor"
-        d="M10 2a8 8 0 1 0 5.293 14.293l4.207 4.207 1.414-1.414-4.207-4.207A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z"
       />
     </svg>
   )
@@ -60,52 +50,24 @@ function IconSun(props) {
 
 export function TopBar({
   title,
-  subtitle,
   left,
   center,
-  showSearch = false,
-  searchPlaceholder = 'Rechercher...',
   right,
   user = { name: 'Admin RH', role: 'RH' },
 }) {
-  const { openDrawer } = useNotifications()
-  const { logout } = useAuth()
+  const { openDrawer, unreadCount } = useNotifications()
+  const { logout, user: authUser } = useAuth()
   const { theme, toggle } = useTheme()
   const navigate = useNavigate()
-
-  const [searchOpen, setSearchOpen] = useState(false)
-  const inputRef = useRef(null)
-  const searchRef = useRef(null)
 
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
 
-  useEffect(() => {
-    if (!searchOpen) return
-    const id = window.setTimeout(() => inputRef.current?.focus(), 0)
-    return () => window.clearTimeout(id)
-  }, [searchOpen])
-
-  useEffect(() => {
-    if (!searchOpen) return
-
-    const onPointerDown = (e) => {
-      if (searchRef.current && !searchRef.current.contains(e.target)) {
-        setSearchOpen(false)
-      }
-    }
-
-    const onKeyDown = (e) => {
-      if (e.key === 'Escape') setSearchOpen(false)
-    }
-
-    window.addEventListener('pointerdown', onPointerDown)
-    window.addEventListener('keydown', onKeyDown)
-    return () => {
-      window.removeEventListener('pointerdown', onPointerDown)
-      window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [searchOpen])
+  const displayUser = authUser ? {
+    name: authUser.name || authUser.email,
+    role: authUser.role,
+    photoProfil: authUser.photoProfil
+  } : user
 
   useEffect(() => {
     if (!menuOpen) return
@@ -136,7 +98,7 @@ export function TopBar({
   const doLogout = () => {
     setMenuOpen(false)
     logout()
-    navigate('/login')
+    navigate('/login', { replace: true })
   }
 
   return (
@@ -144,38 +106,14 @@ export function TopBar({
       <div className="tbLeft">
         {typeof left !== 'undefined' ? (
           left
-        ) : title || subtitle ? (
+        ) : title ? (
           <div className="tbTitleBlock">
             {title ? <div className="tbTitle">{title}</div> : null}
-            {subtitle ? <div className="tbSubtitle">{subtitle}</div> : null}
           </div>
         ) : null}
       </div>
 
-      <div className="tbCenter">
-        {showSearch ? (
-          <div ref={searchRef} className={searchOpen ? 'tbSearch tbSearchOpen' : 'tbSearch'}>
-            <button
-              className="tbSearchBtn"
-              type="button"
-              aria-label={searchOpen ? 'Rechercher' : 'Ouvrir la recherche'}
-              aria-expanded={searchOpen}
-              onClick={() => setSearchOpen((v) => !v)}
-            >
-              <IconSearch className="tbSearchIcon" />
-            </button>
-            <input
-              ref={inputRef}
-              className="tbSearchInput"
-              placeholder={searchPlaceholder}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') setSearchOpen(false)
-              }}
-            />
-          </div>
-        ) : null}
-        {center}
-      </div>
+      <div className="tbCenter">{center}</div>
 
       <div className="tbRight">
         {right}
@@ -190,25 +128,37 @@ export function TopBar({
           {theme === 'dark' ? <IconSun /> : <IconMoon />}
         </button>
 
-        <button className="tbIconBtn" type="button" aria-label="Notifications" onClick={openDrawer}>
-          <IconBell />
-        </button>
+        {!authUser?.doitChangerMotDePasse && (
+          <button className="tbIconBtn" type="button" aria-label="Notifications" onClick={openDrawer}>
+            <IconBell />
+            {unreadCount > 0 && <span className="tbBadge">{unreadCount}</span>}
+          </button>
+        )}
 
         <div ref={menuRef} className="tbMenuWrap">
           <button
             className="tbUser"
             type="button"
-            aria-label="Profil"
+            aria-label="Ouvrir le menu compte"
             aria-haspopup="menu"
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
           <span className="tbAvatar" aria-hidden="true">
-            {initialsFromName(user?.name)}
+            {displayUser.photoProfil ? (
+              <img src={getPhotoUrl(displayUser.photoProfil)} alt={displayUser.name} className="tbAvatarImg" />
+            ) : (
+              initialsFromName(displayUser.name)
+            )}
           </span>
           <span className="tbUserText">
-            <span className="tbUserName">{user.name}</span>
-            <span className="tbUserRole">{user.role}</span>
+            <span className="tbUserName">{displayUser.name}</span>
+            <span className="tbUserRole">
+              {displayUser.role === 'OWNER' ? 'Propriétaire' :
+               displayUser.role === 'RH' ? 'RH' :
+               displayUser.role === 'EMPLOYE' ? 'Employé' :
+               displayUser.role}
+            </span>
           </span>
           <span className="tbCaret" aria-hidden="true">
             ▾
@@ -216,12 +166,14 @@ export function TopBar({
           </button>
 
           {menuOpen ? (
-            <div className="tbMenu" role="menu" aria-label="Menu profil">
-              <button className="tbMenuItem" type="button" role="menuitem" onClick={goProfile}>
-                Profil
-              </button>
+            <div className="tbMenu" role="menu" aria-label="Menu compte">
+              {!authUser?.doitChangerMotDePasse && (
+                <button className="tbMenuItem" type="button" role="menuitem" onClick={goProfile}>
+                  Mon Profil
+                </button>
+              )}
               <button className="tbMenuItem" type="button" role="menuitem" onClick={goSettings}>
-                Settings
+                Paramètres
               </button>
               <div className="tbMenuDivider" aria-hidden="true" />
               <button className="tbMenuItem tbMenuDanger" type="button" role="menuitem" onClick={doLogout}>

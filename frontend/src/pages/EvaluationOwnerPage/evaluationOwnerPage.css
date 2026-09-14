@@ -1,220 +1,701 @@
-:root {
-  --eo-text: var(--text);
-  --eo-muted: var(--muted);
-  --eo-accent: var(--accent);
-  --eo-border: var(--border-mid);
-  --eo-box: var(--canvas);
+/* ──────────────────────────────────────────────
+   EvaluationOwnerPage — Full Layout Styles
+   ────────────────────────────────────────────── */
+
+/* ── Overall layout: sidebar + main */
+.eoLayout {
+  display: flex;
+  height: calc(100vh - 64px);
+  overflow: hidden;
 }
 
-.eoPage {
-  max-width: 960px;
-  margin: 0 auto;
+/* ──────────────── SIDEBAR ──────────────── */
+
+.eoSidebar {
+  width: 260px;
+  min-width: 220px;
+  border-right: 1px solid var(--border-soft);
+  display: flex;
+  flex-direction: column;
   background: var(--surface);
-  padding: 32px 56px 0;
-  min-height: 860px;
-  position: relative;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
 }
 
-.eoSelectors {
+.eoSidebarHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  padding-bottom: 20px;
+  padding: 20px 16px 12px;
+  border-bottom: 1px solid var(--border-soft);
 }
 
-.eoEmployeeBtn {
-  height: 44px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-mid);
-  background: var(--surface);
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 18px 0 10px;
-  font-size: 13px;
-  color: var(--eo-text);
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 200ms ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-}
-
-.eoEmployeeBtn:hover {
-  border-color: var(--brand-steel);
-}
-
-.eoEmployeeIcon {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
-  background: rgba(91, 150, 174, 0.15);
-  display: grid;
-  place-items: center;
-}
-
-.eoCaret {
-  margin-left: 6px;
-  opacity: 0.5;
-}
-
-.eoPeriods {
-  background: rgba(246, 243, 242, 0.8);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-md);
-  padding: 4px;
-  display: inline-flex;
-  gap: 4px;
-}
-
-.eoPeriod {
-  height: 34px;
-  border-radius: var(--radius-sm);
-  border: 0;
-  background: transparent;
-  padding: 0 18px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--eo-muted);
-  cursor: pointer;
-  transition: all 160ms ease;
-}
-
-.eoPeriod:hover {
-  color: var(--brand-navy);
-}
-
-.eoPeriodActive {
-  background: var(--surface);
-  color: var(--brand-navy);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  font-weight: 700;
-}
-
-.eoDivider {
-  height: 1px;
-  background: var(--eo-border);
-  margin: 0 0 28px;
-}
-
-.eoObjectives {
-  display: grid;
-  gap: 32px;
-  padding-bottom: 40px;
-}
-
-.obj {
-  /* objective block */
-}
-
-.objTitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.objHead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.objBox {
-  background: rgba(246, 243, 242, 0.6);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-md);
-  padding: 14px 16px 40px;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
-  outline: none;
-  transition: border-color 200ms ease, box-shadow 200ms ease;
-}
-
-.objBox:focus-within {
-  border-color: var(--brand-cyan);
-  box-shadow: 0 0 0 3px rgba(91, 150, 174, 0.1);
-}
-
-.rate {
-  display: inline-flex;
-  gap: 6px;
-}
-
-.rDot {
-  border-radius: 999px;
-  transition: transform 160ms ease;
-}
-
-.rDot:hover {
-  transform: scale(1.15);
-}
-
-.rDotFilled {
-  background: var(--brand-cyan);
-}
-
-.rDotEmpty {
-  background: rgba(193, 199, 207, 0.4);
-  border: 1px solid rgba(193, 199, 207, 0.5);
-}
-
-.eoBottom {
-  border-top: 1px solid var(--eo-border);
-  padding: 24px 0 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 40px;
-}
-
-.eoBottomTitle {
+.eoSidebarTitle {
   font-size: 11px;
+  font-weight: 800;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: var(--eo-muted);
+  color: var(--text-muted, #6b7280);
+}
+
+.eoPeriodList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.eoPeriodItem {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 140ms ease;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.eoPeriodItem:hover {
+  background: rgba(91, 150, 174, 0.06);
+  border-color: var(--border-soft);
+}
+
+.eoPeriodItemActive {
+  background: rgba(91, 150, 174, 0.12) !important;
+  border-color: var(--brand-cyan, #5b96ae) !important;
+}
+
+.eoPeriodItemName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.eoPeriodItemMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.eoPeriodItemDate {
+  font-size: 11px;
+  color: var(--text-muted, #6b7280);
+  margin-top: 3px;
+}
+
+/* ──────────────── MAIN ──────────────── */
+
+.eoMain {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 36px;
+}
+
+/* Empty state */
+.eoEmptyMain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  color: var(--text-muted, #6b7280);
+  text-align: center;
+}
+
+.eoEmptyIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px dashed var(--border-mid);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  color: var(--text-muted, #6b7280);
+  font-weight: 300;
+}
+.eoEmptyTitle { font-size: 18px; font-weight: 700; color: var(--text); }
+.eoEmptyDesc  { font-size: 14px; max-width: 320px; }
+
+.eoEmpty {
+  padding: 24px 12px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted, #6b7280);
+  line-height: 1.8;
+}
+
+/* Period header */
+.eoPeriodHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.eoPeriodHeaderTitle {
+  font-size: 20px;
   font-weight: 800;
+  color: var(--text);
   margin-bottom: 8px;
 }
 
-.eoSubmit {
-  height: 44px;
-  padding: 0 32px;
-  border: 0;
-  border-radius: var(--radius-md);
-  background: var(--brand-cyan);
-  color: #fff;
-  font-weight: 700;
-  font-size: 14px;
+.eoPeriodHeaderMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.eoPeriodHeaderMeta > * + *::before {
+  content: '·';
+  margin-right: 8px;
+  color: var(--border-mid);
+}
+
+.eoPeriodHeaderDate,
+.eoPeriodHeaderStat {
+  font-size: 12px;
+  color: var(--text-muted, #6b7280);
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
+}
+
+.eoPeriodHeaderSep {
+  color: var(--border-mid);
+  font-size: 14px;
+  line-height: 1;
+  user-select: none;
+}
+
+/* ──────────────── TABS ──────────────── */
+
+.eoTabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--border-soft);
+  margin-bottom: 24px;
+}
+
+.eoTab {
+  height: 40px;
+  padding: 0 20px;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted, #6b7280);
   cursor: pointer;
-  transition: background 160ms ease;
-  box-shadow: 0 2px 6px rgba(91, 150, 174, 0.3);
+  position: relative;
+  transition: color 160ms ease;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
 }
 
-.eoSubmit:hover {
-  background: #4D8A9E;
+.eoTab:hover { color: var(--text); }
+
+.eoTabActive {
+  color: var(--brand-cyan, #5b96ae);
+  border-bottom-color: var(--brand-cyan, #5b96ae);
 }
 
-.eoSubmit span {
-  display: inline-flex;
+.eoTabContent { animation: fadeIn 180ms ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ──────────────── OBJECTIVES TAB ──────────────── */
+
+.eoObjHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.eoSectionTitle {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted, #6b7280);
+}
+
+.eoObjGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.eoObjCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: border-color 160ms ease;
+}
+
+.eoObjCard:hover { border-color: var(--border-mid); }
+
+.eoObjCardNum {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(91, 150, 174, 0.15);
+  color: var(--brand-cyan, #5b96ae);
+  font-size: 12px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.eoObjCardBody { flex: 1; }
+.eoObjCardTitle { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.eoObjCardDesc  { font-size: 12px; color: var(--text-muted, #6b7280); line-height: 1.5; }
+
+.eoObjCardDelete {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted, #6b7280);
+  font-size: 14px;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  transition: all 140ms ease;
+  flex-shrink: 0;
+}
+
+.eoObjCardDelete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.eoObjEmpty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted, #6b7280);
+  border: 1px dashed var(--border-soft);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ──────────────── EVALUATE TAB ──────────────── */
+
+.eoEvalLayout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.eoEmpList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eoEmpCard {
+  display: flex;
   align-items: center;
   gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+  text-align: left;
+  transition: all 140ms ease;
+  width: 100%;
 }
 
-@media (max-width: 1100px) {
-  .eoPage {
-    padding: 24px 16px 0;
-  }
-  .eoBottom {
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
+.eoEmpCard:hover { background: rgba(91,150,174,0.06); border-color: var(--border-soft); }
+
+.eoEmpCardActive {
+  background: rgba(91,150,174,0.12) !important;
+  border-color: var(--brand-cyan, #5b96ae) !important;
+}
+
+.eoEmpAvatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-cyan,#5b96ae), var(--brand-navy,#1a2f4a));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.eoEmpAvatarLg { width: 48px; height: 48px; font-size: 16px; }
+
+.eoEmpInfo { flex: 1; min-width: 0; }
+.eoEmpName  { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.eoEmpPoste { font-size: 11px; color: var(--text-muted,#6b7280); }
+
+.eoEmpDone {
+  color: #22c55e;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Score panel */
+.eoScorePanel {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  min-height: 300px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.eoScorePlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  gap: 12px;
+  color: var(--text-muted,#6b7280);
+  font-size: 14px;
+}
+
+.eoScorePlaceholderIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(91,150,174,0.1);
+  border: 2px dashed rgba(91,150,174,0.3);
+}
+
+.eoScoreHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.eoScoreEmpName  { font-size: 16px; font-weight: 800; color: var(--text); }
+.eoScoreEmpPoste { font-size: 12px; color: var(--text-muted,#6b7280); margin-top: 2px; }
+
+.eoObjectivesList { padding: 16px 24px; display: grid; gap: 16px; }
+
+.eoObjRow {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  transition: border-color 160ms ease;
+}
+
+.eoObjRow:focus-within { border-color: var(--brand-cyan,#5b96ae); }
+
+.eoObjRowHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.eoObjRowTitle { font-size: 13px; font-weight: 700; color: var(--text); }
+.eoObjRowDesc  { font-size: 11px; color: var(--text-muted,#6b7280); margin-top: 2px; }
+
+.eoObjRowComment {
+  width: 100%;
+  min-height: 56px;
+  background: rgba(246,243,242,0.6);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text);
+  resize: vertical;
+  outline: none;
+  transition: border-color 160ms ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.eoObjRowComment:focus { border-color: var(--brand-cyan,#5b96ae); }
+.eoObjRowComment:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.eoGlobalScore {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-top: 1px solid var(--border-soft);
+  background: rgba(246,243,242,0.4);
+}
+
+.eoGlobalLabel {
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--text-muted,#6b7280);
+  margin-bottom: 8px;
+}
+
+/* ──────────────── RATING DOTS ──────────────── */
+
+.rate { display: inline-flex; gap: 6px; flex-shrink: 0; }
+
+.rDot { border-radius: 999px; transition: transform 160ms ease; }
+.rDot:hover { transform: scale(1.2); }
+.rDotFilled { background: var(--brand-cyan,#5b96ae); }
+.rDotEmpty  { background: rgba(193,199,207,0.4); border: 1px solid rgba(193,199,207,0.5); }
+
+/* ──────────────── BADGES ──────────────── */
+
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.badgeActive { background: rgba(34,197,94,0.12); color: #16a34a; }
+.badgeClosed { background: rgba(107,114,128,0.12); color: #4b5563; }
+
+/* ──────────────── BUTTONS ──────────────── */
+
+.eoBtnPrimary {
+  height: 38px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--brand-cyan,#5b96ae);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, opacity 160ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 6px rgba(91,150,174,0.3);
+  white-space: nowrap;
+}
+
+.eoBtnPrimary:hover { background: #4d8a9e; }
+.eoBtnPrimary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.eoBtnSecondary {
+  height: 38px;
+  padding: 0 20px;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.eoBtnSecondary:hover { border-color: var(--brand-cyan,#5b96ae); }
+
+.eoBtnDanger {
+  height: 38px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 160ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.eoBtnDanger:hover { background: rgba(239,68,68,0.2); }
+
+.eoBtnIcon {
+  width: 30px; height: 30px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 18px;
+  color: var(--brand-cyan,#5b96ae);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.eoBtnIcon:hover { background: rgba(91,150,174,0.1); border-color: var(--brand-cyan,#5b96ae); }
+
+/* ──────────────── MODALS ──────────────── */
+
+.eoOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 160ms ease;
+}
+
+.eoModal {
+  width: 460px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  overflow: hidden;
+  animation: slideUp 200ms ease;
+}
+
+.eoModalSm { width: 380px; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.eoModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.eoModalTitle { font-size: 16px; font-weight: 800; color: var(--text); }
+
+.eoModalClose {
+  width: 28px; height: 28px;
+  border: 0; background: transparent;
+  color: var(--text-muted,#6b7280);
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  transition: all 140ms ease;
+}
+
+.eoModalClose:hover { background: var(--border-soft); color: var(--text); }
+
+.eoModalBody {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.eoModalFooter {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-soft);
+  background: rgba(246,243,242,0.5);
+}
+
+.eoLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted,#6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: -4px;
+}
+
+.eoInput {
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 0 14px;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.eoInput:focus {
+  border-color: var(--brand-cyan,#5b96ae);
+  box-shadow: 0 0 0 3px rgba(91,150,174,0.12);
+}
+
+.eoTextarea {
+  height: auto;
+  min-height: 90px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.eoModalWarning {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ──────────────── MISC ──────────────── */
+
+.eoClosedNote {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(107,114,128,0.08);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  color: var(--text-muted,#6b7280);
+}
+
+/* ──────────────── RESPONSIVE ──────────────── */
+
+@media (max-width: 900px) {
+  .eoLayout { flex-direction: column; height: auto; overflow: auto; }
+  .eoSidebar { width: 100%; height: auto; border-right: 0; border-bottom: 1px solid var(--border-soft); }
+  .eoPeriodList { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; }
+  .eoPeriodItem { width: auto; flex-shrink: 0; }
+  .eoMain { padding: 20px 16px; }
+  .eoEvalLayout { grid-template-columns: 1fr; }
+  .eoEmpList { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); }
+}
+
+.eoEmpAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 999px;
 }
