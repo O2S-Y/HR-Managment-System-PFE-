@@ -1,23 +1,69 @@
-# Dependencies
-node_modules/
+# ==========================================
+# Root .gitignore - HR Management System (NewDev RH)
+# ==========================================
 
-# Build output
-dist/
-build/
-
-# Environment files
-.env
-.env.local
-.env.*.local
-
-# IDE
-.vscode/
-.idea/
-
-# OS files
+# OS Files
 .DS_Store
 Thumbs.db
+Desktop.ini
+*.tmp
+*.bak
 
-# Logs
-*.log
+# IDE & Editor Files
+.idea/
+.vscode/
+.cursor/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.springBeans
+.sts4-cache
+.apt_generated
+
+# Environment & Secrets (NEVER COMMIT)
+.env
+.env.*
+!.env.example
+*.local
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+build/
+frontend/build/
+.npm/
+*-debug.log*
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+
+# Java / Maven / Backend
+backend/target/
+target/
+*.class
+*.jar
+*.war
+*.ear
+backend/.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Backend Uploads (Keep directory structure with .gitkeep)
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/uploads/profiles/*
+!backend/uploads/profiles/.gitkeep
+
+# Local Working / Redundant Folders
+Temp/
+_exports/
+report/
+Presentaion PFE/
+For Acadimic SuperVisor/

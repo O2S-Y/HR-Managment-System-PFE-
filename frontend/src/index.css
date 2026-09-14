@@ -83,3 +83,28 @@ body {
 /* Scrollbar hide utility */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Print Styles ── */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .shellSidebar,
+  .shellHeader,
+  .exportBtn,
+  .erhExportBtn {
+    display: none !important;
+  }
+  .shellRoot {
+    grid-template-columns: 1fr !important;
+    display: block !important;
+  }
+  .shellContent {
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  .dashMain, .erhPage {
+    padding: 0 !important;
+  }
+}

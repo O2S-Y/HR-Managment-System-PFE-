@@ -2,6 +2,11 @@ import './dashboardPage.css'
 import { AppShell } from '../../components/AppShell/AppShell'
 import { TopBar } from '../../components/TopBar/TopBar'
 import { useAuth } from '../../contexts/AuthContext'
+import { useEffect, useState } from 'react'
+import { dashboardApi } from '../../services/authApi'
+import { leaveApi } from '../../services/authApi'
+import toast from 'react-hot-toast'
+import { getPhotoUrl } from '../../services/http'
 import {
   Bar,
   BarChart,
@@ -12,32 +17,13 @@ import {
   YAxis,
 } from 'recharts'
 
-const kpis = [
-  { value: '24', label: 'Employés actifs' },
-  { value: '08', label: 'Congés en cours' },
-  { value: '12', label: 'Évaluations ce mois' },
-  { value: '03', label: 'Actifs non assignés' },
-]
+function initialsFromName(name) {
+  if (!name || typeof name !== 'string') return '—'
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  return name.slice(0, 2).toUpperCase()
+}
 
-const pendingLeaves = [
-  { collaborator: 'Jean Dupont', type: 'Congé Payé', dates: '14–20 Oct', status: 'En attente' },
-  { collaborator: 'Sarah Mansour', type: 'RTT', dates: '18 Oct', status: 'En attente' },
-]
-
-const leaveUsageData = [
-  { month: 'J', value: 4 },
-  { month: 'F', value: 6 },
-  { month: 'M', value: 3 },
-  { month: 'A', value: 8 },
-  { month: 'M', value: 12 },
-  { month: 'J', value: 5 },
-]
-
-const recentEvaluations = [
-  { name: 'Marc-Antoine', period: 'Q3 2023', score: 4 },
-  { name: 'Aline R.', period: 'Q3 2023', score: 4 },
-  { name: 'Luc B.', period: 'Q3 2023', score: 4 },
-]
 
 function IconGrid(props) {
   return (
@@ -130,25 +116,58 @@ function RatingDots({ value = 4, max = 5 }) {
 export function DashboardPage() {
   const { user } = useAuth()
   const isOwner = user?.role === 'OWNER'
-  const isRH = user?.role === 'RH'
+
+  const [stats, setStats] = useState(null)
+  const [pendingLeaves, setPendingLeaves] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const leaveUsageData = stats?.leaveUsage || []
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [statsData, leavesData] = await Promise.all([
+          dashboardApi.getStats(),
+          leaveApi.getPending(),
+        ])
+        setStats(statsData)
+        setPendingLeaves(leavesData || [])
+      } catch (err) {
+        console.error('Dashboard load error', err)
+        toast.error("Erreur lors du chargement des données du tableau de bord")
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  // Build KPI cards from real stats (matches DashboardStatsDto fields)
+  const kpis = stats
+    ? [
+        { value: String(stats.totalEmployees ?? 0), label: 'Employés actifs' },
+        { value: String(stats.pendingLeaves ?? 0), label: 'Congés en attente' },
+        { value: String(stats.pendingProfileChanges ?? 0), label: 'Demandes de profil' },
+        { value: String(stats.availableAssets ?? 0), label: 'Actifs disponibles' },
+        { value: String(stats.assignedAssets ?? 0), label: 'Actifs affectés' },
+      ]
+    : []
 
   return (
     <AppShell
       header={
         <TopBar
           title="Tableau de Bord"
-          showSearch
-          searchPlaceholder="Rechercher..."
           right={
             <>
               {/* M4_UC1: Exporter tableau de bord en PDF — Owner only */}
               {isOwner && (
-                <button className="exportBtn" type="button">
+                <button className="exportBtn" type="button" onClick={() => window.print()}>
                   <IconDownload />
                   Export PDF
                 </button>
               )}
-              <span className="dateText">12 Octobre 2023</span>
+              <span className="dateText">{new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
             </>
           }
         />
@@ -179,13 +198,23 @@ export function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {pendingLeaves.map((row) => (
-                    <tr key={row.collaborator}>
-                      <td className="tdStrong">{row.collaborator}</td>
-                      <td>{row.type}</td>
-                      <td>{row.dates}</td>
+                  {loading ? (
+                    <tr><td colSpan={4} style={{ textAlign: 'center', padding: '1rem', color: '#8a9bb0' }}>Chargement…</td></tr>
+                  ) : pendingLeaves.length === 0 ? (
+                    <tr><td colSpan={4} style={{ textAlign: 'center', padding: '1rem', color: '#8a9bb0' }}>Aucune demande en attente</td></tr>
+                  ) : pendingLeaves.map((row, i) => (
+                    <tr key={row.id ?? i}>
+                      <td className="tdStrong">{row.employee?.nomComplet || '—'}</td>
+                      <td>{row.typeConge?.nom ?? '—'}</td>
+                      <td>{row.dateDebut} – {row.dateFin}</td>
                       <td className="tdRight">
-                        <span className="statusPill">{row.status}</span>
+                        <span className="statusPill">
+                          {row.statut === 'EN_ATTENTE' ? 'En attente' :
+                           row.statut === 'APPROUVE' ? 'Approuvé' :
+                           row.statut === 'REFUSE' ? 'Refusé' :
+                           row.statut === 'ANNULE' ? 'Annulé' :
+                           row.statut}
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -213,18 +242,27 @@ export function DashboardPage() {
         <section className="row3" aria-label="Évaluations récentes">
           <div className="row3Title">ÉVALUATIONS RÉCENTES</div>
           <div className="evalGrid">
-            {recentEvaluations.map((e) => (
-              <div key={e.name} className="evalCard">
+            {(stats?.recentEvaluations ?? []).map((e, i) => (
+              <div key={e.id ?? i} className="evalCard">
                 <div className="evalLeft">
-                  <div className="evalAvatar" aria-hidden="true" />
+                  <div className="evalAvatar" aria-hidden="true">
+                    {e.employee?.photoProfil ? (
+                      <img src={getPhotoUrl(e.employee.photoProfil)} alt={e.employee.nomComplet} className="evalAvatarImg" />
+                    ) : (
+                      initialsFromName(e.employee?.nomComplet || e.evaluateur?.courriel || '—')
+                    )}
+                  </div>
                   <div className="evalMeta">
-                    <div className="evalName">{e.name}</div>
-                    <div className="evalPeriod">{e.period}</div>
+                    <div className="evalName">{e.employee?.nomComplet || e.evaluateur?.courriel || '—'}</div>
+                    <div className="evalPeriod">{e.periode}</div>
                   </div>
                 </div>
-                <RatingDots value={e.score} />
+                <RatingDots value={e.noteMoyenne ?? 0} />
               </div>
             ))}
+            {!loading && (stats?.recentEvaluations ?? []).length === 0 && (
+              <p style={{ color: '#8a9bb0', fontSize: '0.85rem' }}>Aucune évaluation récente</p>
+            )}
           </div>
         </section>
       </div>

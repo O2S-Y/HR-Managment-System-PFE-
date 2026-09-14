@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AppShell } from '../../components/AppShell/AppShell'
 import { TopBar } from '../../components/TopBar/TopBar'
 import { CreateEmployeeModal } from './CreateEmployeeModal'
 import { useAuth } from '../../contexts/AuthContext'
+import { employeeApi, profileChangeApi } from '../../services/authApi'
+import { getPhotoUrl } from '../../services/http'
 import './employeesListPage.css'
 
 function IconSearch(props) {
@@ -47,56 +49,249 @@ function IconEdit(props) {
   )
 }
 
-const initialEmployees = [
-  { id: '1', initials: 'AL', name: 'Amelie Laurent', role: 'Senior Developer', dept: 'Engineering', hired: '12 Oct 2021', status: 'Actif' },
-  { id: '2', initials: 'MB', name: 'Marc Dubois', role: 'Product Manager', dept: 'Product', hired: '05 Jan 2022', status: 'Actif' },
-  { id: '3', initials: 'SL', name: 'Sophie Martin', role: 'HR Specialist', dept: 'People Ops', hired: '22 Mar 2023', status: 'Inactif' },
-  { id: '4', initials: 'JP', name: 'Jean Petit', role: 'UI Designer', dept: 'Design', hired: '10 Nov 2022', status: 'Actif' },
-  { id: '5', initials: 'CL', name: 'Claire Leroy', role: 'Data Analyst', dept: 'Data', hired: '15 Feb 2024', status: 'Actif' },
-]
+function initialsFromName(name) {
+  if (!name || typeof name !== 'string') return '—'
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  return name.slice(0, 2).toUpperCase()
+}
+
+const PAGE_SIZE = 5
 
 export function EmployeesListPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const isRH = user?.role === 'RH'
   const [createOpen, setCreateOpen] = useState(false)
-  const [employees, setEmployees] = useState(initialEmployees)
+  const [editingEmployee, setEditingEmployee] = useState(null)
+  const [employees, setEmployees] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [activeFilter, setActiveFilter] = useState('Tous')
   const [searchTerm, setSearchTerm] = useState('')
+  const [page, setPage] = useState(1)
+  const [pendingChanges, setPendingChanges] = useState([])
+  const [loadingChanges, setLoadingChanges] = useState(false)
+
+  // Fetch employees from backend on mount
+  useEffect(() => {
+    setError(null)
+    employeeApi.getAll()
+      .then((data) => {
+        setEmployees(Array.isArray(data) ? data : [])
+      })
+      .catch((err) => {
+        console.error('Failed to load employees', err)
+        setError('Impossible de charger les employés. Vérifiez que le backend est lancé.')
+        setEmployees([])
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    if (isRH) {
+      setLoadingChanges(true)
+      profileChangeApi.getPendingRequests()
+        .then((data) => {
+          setPendingChanges(data ?? [])
+        })
+        .catch((err) => console.error('Failed to load pending profile changes', err))
+        .finally(() => setLoadingChanges(false))
+    }
+  }, [isRH])
 
   const filteredEmployees = useMemo(() => {
     return employees.filter(e => {
-      // Filter by search term
-      if (searchTerm && !e.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+      const name = e.nomComplet || e.name || ''
+      const poste = e.poste || e.role || ''
+      const email = e.email || ''
+      const statut = e.statut || e.status || ''
+
+      if (searchTerm && !name.toLowerCase().includes(searchTerm.toLowerCase())
+                      && !poste.toLowerCase().includes(searchTerm.toLowerCase())
+                      && !email.toLowerCase().includes(searchTerm.toLowerCase())) {
         return false
       }
-      // Filter by active pill
       if (activeFilter === 'Tous') return true
-      if (activeFilter === 'Actif' && e.status !== 'Actif') return false
-      if (activeFilter === 'Inactif' && e.status !== 'Inactif') return false
-      if (activeFilter === 'En congé' && e.status !== 'En congé') return false
+      if (activeFilter === 'Actif' && statut !== 'ACTIF' && statut !== 'Actif') return false
+      if (activeFilter === 'Inactif' && statut !== 'ARCHIVE' && statut !== 'Inactif') return false
       return true
     })
   }, [employees, activeFilter, searchTerm])
 
-  const addEmployee = useMemo(() => {
-    return (empRow) => setEmployees((prev) => [empRow, ...prev])
-  }, [])
+  // Reset page when filters change
+  useEffect(() => { setPage(1) }, [activeFilter, searchTerm])
+
+  const totalPages = Math.max(1, Math.ceil(filteredEmployees.length / PAGE_SIZE))
+  const paginated = filteredEmployees.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  const addEmployee = (emp) => setEmployees((prev) => [emp, ...prev])
+
+  const updateEmployee = (updatedEmp) => {
+    setEmployees(prev => prev.map(e => e.id === updatedEmp.id ? updatedEmp : e))
+  }
+
+  const handleEdit = (emp) => {
+    setEditingEmployee(emp)
+    setCreateOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setCreateOpen(false)
+    setEditingEmployee(null)
+  }
+
+  const handleCreated = async () => {
+    // Refresh the list after create
+    try {
+      const data = await employeeApi.getAll()
+      setEmployees(data ?? [])
+    } catch (err) {
+      console.error('Refresh failed', err)
+    }
+  }
 
   return (
     <AppShell
       header={
         <TopBar
           title="Gestion des Employés"
-          showSearch={false}
           user={{ name: user?.email || 'Utilisateur', role: user?.role || 'RH' }}
         />
       }
     >
       <div className="empPage">
-        {/* M1_UC1: Créer un profil — RH only */}
         {isRH && (
-          <CreateEmployeeModal open={createOpen} onClose={() => setCreateOpen(false)} onCreate={addEmployee} />
+          <CreateEmployeeModal
+            open={createOpen}
+            onClose={handleModalClose}
+            onCreate={(emp) => { addEmployee(emp); handleCreated() }}
+            editingEmployee={editingEmployee}
+            onUpdate={updateEmployee}
+          />
+        )}
+
+        {isRH && pendingChanges.length > 0 && (
+          <section className="tableCard" style={{ marginBottom: '2rem', border: '1px solid #f39c12' }} aria-label="Demandes de modification de profil en attente">
+            <div style={{ padding: '16px 20px', background: 'rgba(243, 156, 18, 0.05)', borderBottom: '1px solid rgba(243, 156, 18, 0.15)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f39c12' }} />
+              <h2 style={{ fontSize: '15px', fontWeight: '700', color: '#d35400', margin: 0 }}>
+                Demandes de modification de profil en attente ({pendingChanges.length})
+              </h2>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="empTable">
+                <thead>
+                  <tr>
+                    <th>Employé</th>
+                    <th>Date soumission</th>
+                    <th>Changements demandés</th>
+                    <th>Commentaire RH (Obligatoire en cas de refus)</th>
+                    <th className="thActions" style={{ width: '220px' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingChanges.map((req) => {
+                    let parsedFields = {}
+                    try {
+                      parsedFields = JSON.parse(req.champsModifies)
+                    } catch (e) {
+                      console.error("Failed to parse request JSON", e)
+                    }
+                    const fieldLines = Object.entries(parsedFields).map(([key, val]) => {
+                      const labelMap = {
+                        email: 'Email',
+                        telephone: 'Téléphone',
+                        cin: 'CIN',
+                        dateNaissance: 'Date de naissance',
+                        adresse: 'Adresse'
+                      }
+                      return `${labelMap[key] || key} : ${val}`
+                    }).join(', ')
+
+                    return (
+                      <tr key={req.id}>
+                        <td>
+                          <div style={{ fontWeight: '600', color: 'var(--text)' }}>
+                            {req.employee?.nomComplet || '—'}
+                          </div>
+                          <div style={{ fontSize: '11px', color: 'var(--muted)' }}>
+                            {req.employee?.poste || ''}
+                          </div>
+                        </td>
+                        <td style={{ fontFamily: 'monospace' }}>
+                          {req.dateSoumission ? req.dateSoumission.split('T')[0] : '—'}
+                        </td>
+                        <td>
+                          <div style={{ fontSize: '13px', color: 'var(--text)' }}>
+                            {fieldLines || req.champsModifies}
+                          </div>
+                        </td>
+                        <td onClick={(ev) => ev.stopPropagation()}>
+                          <input 
+                            type="text" 
+                            id={`global-comment-rh-${req.id}`}
+                            placeholder="ex: Justificatif vérifié..." 
+                            style={{ 
+                              width: '100%', 
+                              padding: '6px 12px', 
+                              borderRadius: '6px', 
+                              border: '1px solid var(--border-mid)', 
+                              fontSize: '13px',
+                              background: 'var(--surface)',
+                              color: 'var(--text)'
+                            }}
+                          />
+                        </td>
+                        <td className="tdActions" style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', padding: '12px 20px' }} onClick={(ev) => ev.stopPropagation()}>
+                          <button 
+                            className="addBtn"
+                            type="button"
+                            style={{ padding: '6px 12px', fontSize: '12px', background: '#27ae60', borderColor: '#27ae60', height: '32px' }}
+                            onClick={async () => {
+                              const comment = document.getElementById(`global-comment-rh-${req.id}`)?.value || ''
+                              try {
+                                await profileChangeApi.processRequest(req.id, true, comment)
+                                alert("✅ Demande approuvée avec succès !")
+                                setPendingChanges(prev => prev.filter(r => r.id !== req.id))
+                              } catch (err) {
+                                console.error(err)
+                                alert("Erreur lors de l'approbation : " + (err.response?.data?.message || err.message))
+                              }
+                            }}
+                          >
+                            Approuver
+                          </button>
+                          <button 
+                            className="btnGhost"
+                            type="button"
+                            style={{ padding: '6px 12px', fontSize: '12px', height: '32px', borderColor: '#dc2626', color: '#dc2626' }}
+                            onClick={async () => {
+                              const comment = document.getElementById(`global-comment-rh-${req.id}`)?.value || ''
+                              if (!comment.trim()) {
+                                alert("Un commentaire est obligatoire en cas de refus.")
+                                return
+                              }
+                              try {
+                                await profileChangeApi.processRequest(req.id, false, comment)
+                                alert("❌ Demande refusée.")
+                                setPendingChanges(prev => prev.filter(r => r.id !== req.id))
+                              } catch (err) {
+                                console.error(err)
+                                alert("Erreur lors du refus : " + (err.response?.data?.message || err.message))
+                              }
+                            }}
+                          >
+                            Refuser
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
         )}
 
         <div className="empToolbar" aria-label="Barre d'actions">
@@ -109,9 +304,8 @@ export function EmployeesListPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          {/* M1_UC1: Créer un profil — RH only */}
           {isRH && (
-            <button className="addBtn" type="button" onClick={() => setCreateOpen(true)}>
+            <button className="addBtn" type="button" onClick={() => { setEditingEmployee(null); setCreateOpen(true); }}>
               <IconPlus />
               Ajouter un employé
             </button>
@@ -119,7 +313,7 @@ export function EmployeesListPage() {
         </div>
 
         <div className="filterRow" aria-label="Filtres">
-          {['Tous', 'Actif', 'Inactif', 'En congé'].map(f => (
+          {['Tous', 'Actif', 'Inactif'].map(f => (
             <button
               key={f}
               className={f === activeFilter ? 'pill pillActive' : 'pill'}
@@ -144,61 +338,91 @@ export function EmployeesListPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredEmployees.map((e) => (
-                <tr key={e.id} onClick={() => navigate(`/employees/${e.id}`)} style={{ cursor: 'pointer' }}>
-                  <td>
-                    <div className="empCell">
-                      <div className="badge">{e.initials}</div>
-                      <span className="empName">{e.name}</span>
-                    </div>
-                  </td>
-                  <td>{e.role}</td>
-                  <td>{e.dept}</td>
-                  <td>{e.hired}</td>
-                  <td>
-                    <span className={e.status === 'Actif' ? 'statusGreen' : 'statusGray'}>
-                      {e.status}
-                    </span>
-                  </td>
-                  <td className="tdActions" onClick={(ev) => ev.stopPropagation()}>
-                    {/* M1_UC5: Consulter les profils — RH + Owner */}
-                    <Link className="actionIcon" to={`/employees/${e.id}`} aria-label="Voir">
-                      <IconEye />
-                    </Link>
-                    {/* M1_UC1: Modifier un profil — RH only */}
-                    {isRH && (
-                      <button className="actionIcon" type="button" aria-label="Modifier">
-                        <IconEdit />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {loading ? (
+                <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: '#8a9bb0' }}>Chargement…</td></tr>
+              ) : error ? (
+                <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: '#e74c3c' }}>{error}</td></tr>
+              ) : paginated.length === 0 ? (
+                <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: '#8a9bb0' }}>Aucun employé trouvé</td></tr>
+              ) : paginated.map((e) => {
+                const name = e.nomComplet || e.name || '—'
+                const initials = initialsFromName(name)
+                const poste = e.poste || e.role || '—'
+                const dept = e.departement || e.dept || '—'
+                const hired = e.dateEmbauche || e.hired || '—'
+                const status = e.statut || e.status || '—'
+                const isActive = status === 'ACTIF' || status === 'Actif'
+
+                return (
+                  <tr key={e.id} onClick={() => navigate(`/employees/${e.id}`)} style={{ cursor: 'pointer' }}>
+                    <td>
+                      <div className="empCell">
+                        <div className="badge">
+                          {e.photoProfil ? (
+                            <img src={getPhotoUrl(e.photoProfil)} alt={name} className="empBadgeImg" />
+                          ) : (
+                            initials
+                          )}
+                        </div>
+                        <span className="empName">{name}</span>
+                      </div>
+                    </td>
+                    <td>{poste}</td>
+                    <td>{dept}</td>
+                    <td>{hired}</td>
+                    <td>
+                      <span className={isActive ? 'statusGreen' : 'statusGray'}>
+                        {isActive ? 'Actif' : 'Inactif'}
+                      </span>
+                    </td>
+                    <td className="tdActions" onClick={(ev) => ev.stopPropagation()}>
+                      <Link className="actionIcon" to={`/employees/${e.id}`} aria-label="Voir">
+                        <IconEye />
+                      </Link>
+                      {isRH && (
+                        <button className="actionIcon" type="button" aria-label="Modifier" onClick={() => handleEdit(e)}>
+                          <IconEdit />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </section>
 
-        <div className="pagination" aria-label="Pagination">
-          <button className="pageBtn pageMuted" type="button">
-            ‹ Précédent
-          </button>
-          <button className="pageBtn pageActive" type="button">
-            1
-          </button>
-          <button className="pageBtn" type="button">
-            2
-          </button>
-          <button className="pageBtn" type="button">
-            3
-          </button>
-          <span className="dots">…</span>
-          <button className="pageBtn" type="button">
-            12
-          </button>
-          <button className="pageBtn pageMuted" type="button">
-            Suivant ›
-          </button>
-        </div>
+        {/* Working Pagination */}
+        {totalPages > 1 && (
+          <div className="pagination" aria-label="Pagination">
+            <button
+              className="pageBtn pageMuted"
+              type="button"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              ‹ Précédent
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                className={`pageBtn ${p === page ? 'pageActive' : ''}`}
+                type="button"
+                onClick={() => setPage(p)}
+              >
+                {p}
+              </button>
+            ))}
+            <button
+              className="pageBtn pageMuted"
+              type="button"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              Suivant ›
+            </button>
+          </div>
+        )}
       </div>
     </AppShell>
   )

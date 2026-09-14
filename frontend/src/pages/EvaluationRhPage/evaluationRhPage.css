@@ -28,16 +28,6 @@
   color: var(--text-secondary);
 }
 
-.erhBadgeRO {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  padding: 0.2rem 0.7rem;
-  border-radius: 999px;
-  background: rgba(52, 152, 219, 0.12);
-  color: #3498db;
-}
-
 .erhExportBtn {
   font-family: var(--font);
   font-size: 0.82rem;
@@ -108,3 +98,13 @@
 }
 .erhStatus.ok   { background: rgba(39,174,96,0.12); color: #27ae60; }
 .erhStatus.wait { background: rgba(243,156,18,0.12); color: #f39c12; }
+
+/* comment */
+.erhComment {
+  max-width: 300px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  word-break: break-word;
+  white-space: pre-wrap;
+}

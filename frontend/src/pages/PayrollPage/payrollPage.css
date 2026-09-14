@@ -1,0 +1,666 @@
+.payMain {
+  padding-top: 24px;
+}
+
+/* KPI row */
+.payKpiRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.payKpiCard {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px 18px;
+  min-height: 100px;
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.payKpiCard:hover {
+  box-shadow: 0 4px 16px rgba(27, 58, 75, 0.06);
+  border-color: rgba(91, 150, 174, 0.3);
+}
+
+.payKpiDot {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.payKpiDotGreen  { background: #22c55e; }
+.payKpiDotRed    { background: #ef4444; }
+.payKpiDotBlue   { background: #3b82f6; }
+.payKpiDotPurple { background: #a855f7; }
+
+.payKpiValue {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--brand-navy);
+  line-height: 1.2;
+  font-family: var(--font-display);
+}
+
+[data-theme='dark'] .payKpiValue {
+  color: var(--text);
+}
+
+.payKpiLabel {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+/* Tabs */
+.payTabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border-soft);
+}
+
+.payTab {
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 160ms ease;
+}
+
+.payTab:hover {
+  color: var(--text);
+}
+
+.payTabActive {
+  color: var(--brand-navy);
+  border-bottom-color: var(--brand-cyan);
+}
+
+[data-theme='dark'] .payTabActive {
+  color: var(--text);
+}
+
+/* Add button */
+.payAddBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--brand-cyan);
+  color: #fff;
+  background: var(--brand-cyan);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.payAddBtn:hover {
+  background: var(--brand-navy);
+  border-color: var(--brand-navy);
+}
+
+/* Form */
+.payFormCard {
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 24px rgba(27, 58, 75, 0.08);
+}
+
+.payFormTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--brand-navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+
+[data-theme='dark'] .payFormTitle {
+  color: var(--text);
+}
+
+.payForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.payFormRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.payFormRowTriple {
+  flex-direction: row;
+  gap: 16px;
+}
+
+.payFormRowTriple .payLabel {
+  flex: 1;
+}
+
+.payLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+.paySelect,
+.payInput {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-mid);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 160ms ease;
+}
+
+.paySelect:focus,
+.payInput:focus {
+  border-color: var(--brand-cyan);
+}
+
+.payFormNet {
+  padding: 12px 16px;
+  background: rgba(34, 197, 94, 0.06);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  color: #15803d;
+}
+
+.payFormNet strong {
+  font-weight: 800;
+  font-family: var(--font-display);
+}
+
+.payFormActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.payCancelBtn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-mid);
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.payCancelBtn:hover {
+  border-color: var(--brand-cyan);
+  color: var(--text);
+}
+
+.paySubmitBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid #22c55e;
+  background: #22c55e;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.paySubmitBtn:hover {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+/* Filters */
+.payFilters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.payFilterSelect {
+  width: 160px;
+}
+
+/* Table */
+.payTableWrap {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.payTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.payTable thead th {
+  padding: 14px 20px;
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  background: rgba(246, 243, 242, 0.5);
+  border-bottom: 1px solid var(--border-mid);
+  text-align: left;
+}
+
+[data-theme='dark'] .payTable thead th {
+  background: var(--surface-2);
+}
+
+.payTable tbody td {
+  padding: 14px 20px;
+  font-size: 13px;
+  color: var(--muted);
+  border-top: 1px solid rgba(193, 199, 207, 0.1);
+}
+
+.payTdStrong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.payTdMono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12px;
+}
+
+.payThRight {
+  text-align: right;
+}
+
+.payTdRed {
+  color: #dc2626;
+}
+
+.payTdNet {
+  color: #15803d;
+  font-weight: 700;
+  font-family: var(--font-display);
+}
+
+.payEmpty {
+  text-align: center;
+  padding: 40px 20px !important;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ─── Tax Selection UI ─── */
+
+.payTaxSection {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  background: rgba(246, 243, 242, 0.3);
+}
+
+[data-theme='dark'] .payTaxSection {
+  background: var(--surface-2);
+}
+
+.payTaxSectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--brand-navy);
+  margin-bottom: 16px;
+}
+
+[data-theme='dark'] .payTaxSectionTitle {
+  color: var(--text);
+}
+
+.payTaxGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payTaxItem {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  background: var(--surface);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.payTaxItemActive {
+  border-color: var(--brand-cyan);
+  box-shadow: 0 0 0 1px var(--brand-cyan);
+}
+
+.payTaxCheckRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.payTaxCheckbox {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--brand-cyan);
+  cursor: pointer;
+}
+
+.payTaxInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.payTaxName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.payTaxDesc {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.payTaxAmountRow {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.payTaxAmountLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  max-width: 280px;
+}
+
+.payTaxAmountInput {
+  height: 36px;
+}
+
+/* Form Summary */
+.payFormSummary {
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.payFormSummaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--text);
+  border-bottom: 1px solid rgba(193, 199, 207, 0.1);
+}
+
+.payFormSummaryRow:last-child {
+  border-bottom: none;
+}
+
+.payFormSummaryRowDed {
+  background: rgba(239, 68, 68, 0.03);
+  font-size: 13px;
+}
+
+.payFormSummaryRowTotal {
+  background: rgba(34, 197, 94, 0.06);
+  padding: 14px 16px;
+  border-top: 2px solid var(--border-mid);
+  font-size: 16px;
+}
+
+.payFormSummaryRed {
+  color: #dc2626;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.payFormSummaryGreen {
+  color: #15803d;
+  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+/* Deduction Tags in Table */
+.payDeductionTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.payDeductionTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-md);
+  background: rgba(239, 68, 68, 0.06);
+  color: #991b1b;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.payDeductionTag strong {
+  font-weight: 800;
+}
+
+/* ─── Salary Edit Button ─── */
+.paySalaryEditBtn {
+  border: 0;
+  background: transparent;
+  color: var(--brand-cyan);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all 160ms ease;
+}
+.paySalaryEditBtn:hover {
+  color: var(--brand-navy);
+  text-decoration: underline;
+}
+
+/* ─── Salary Edit Modal ─── */
+.payOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(27, 58, 75, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: payOverlayFade 200ms ease;
+}
+@keyframes payOverlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.payModal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(27, 58, 75, 0.2);
+  animation: payModalSlide 200ms ease;
+}
+@keyframes payModalSlide {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.payModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.payModalTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.payModalClose {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+.payModalClose:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+.payModalBody {
+  padding: 24px;
+}
+.payModalAsset {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 14px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: rgba(91, 150, 174, 0.06);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+}
+.payFieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.payFieldLabel {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+.payFieldInput {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-mid);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 160ms ease;
+}
+.payFieldInput:focus {
+  border-color: var(--brand-cyan);
+}
+.payModalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-soft);
+}
+.payModalSecondary {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-mid);
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+.payModalSecondary:hover {
+  border-color: var(--brand-cyan);
+  color: var(--text);
+}
+.payModalPrimary {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--brand-cyan);
+  background: var(--brand-cyan);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+.payModalPrimary:hover {
+  background: var(--brand-navy);
+  border-color: var(--brand-navy);
+}
+.payModalPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1100px) {
+  .payKpiRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .payFormRowTriple {
+    flex-direction: column;
+  }
+}

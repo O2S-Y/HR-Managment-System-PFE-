@@ -1,28 +1,645 @@
-.settingsCard {
-  max-width: 880px;
+/* ═══════════════════════════════════════════════
+   SettingsPage — Paramètres & Gestion Comptes
+   ═══════════════════════════════════════════════ */
+
+.stMain {
+  max-width: 960px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Tab Bar ── */
+.stTabBar {
+  display: flex;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+}
+
+.stTab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.stTab:hover {
+  color: var(--text);
+  background: var(--surface-hover, rgba(0, 0, 0, 0.03));
+}
+
+.stTabActive {
+  background: var(--brand-navy, #1e3a5f);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(30, 58, 95, 0.18);
+}
+
+.stTabActive:hover {
+  background: var(--brand-navy, #1e3a5f);
+  color: #fff;
+}
+
+[data-theme='dark'] .stTabActive {
+  background: var(--accent, #6c8ebf);
+  color: #fff;
+}
+
+.stTabIcon {
+  flex-shrink: 0;
+}
+
+/* ── Card ── */
+.stCard {
   background: var(--surface);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   padding: 24px;
+  animation: stFadeIn 0.25s ease;
 }
 
-.settingsTitle {
+@keyframes stFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.stCardTitle {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--brand-navy);
 }
 
-[data-theme='dark'] .settingsTitle {
+[data-theme='dark'] .stCardTitle {
   color: var(--text);
 }
 
-.settingsSubtitle {
-  margin: 10px 0 0;
+.stCardDesc {
+  margin: 4px 0 0;
   color: var(--muted);
   font-size: 13px;
   line-height: 1.5;
 }
 
+/* ── Form Fields ── */
+.stPwForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 440px;
+}
+
+.stFieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stInput {
+  padding: 10px 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md, 8px);
+  font-size: 14px;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--bg, #fff);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.stInput:focus {
+  border-color: var(--brand-navy, #1e3a5f);
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
+}
+
+[data-theme='dark'] .stInput {
+  background: var(--surface-2, #1a1f2e);
+  border-color: var(--border-soft);
+}
+
+[data-theme='dark'] .stInput:focus {
+  border-color: var(--accent, #6c8ebf);
+  box-shadow: 0 0 0 3px rgba(108, 142, 191, 0.15);
+}
+
+.stInputMono {
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+}
+
+.stSelect {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%236b7280' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.stFieldHint {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.stFieldHintWarn {
+  color: var(--warning, #e67e22);
+}
+
+/* ── Alerts ── */
+.stAlert {
+  padding: 10px 14px;
+  border-radius: var(--radius-md, 8px);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.stAlertError {
+  background: rgba(220, 53, 69, 0.08);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.15);
+}
+
+.stAlertSuccess {
+  background: rgba(40, 167, 69, 0.08);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.15);
+}
+
+.stAlertWarning {
+  background: rgba(230, 126, 34, 0.08);
+  color: #e67e22;
+  border: 1px solid rgba(230, 126, 34, 0.15);
+}
+
+[data-theme='dark'] .stAlertWarning {
+  background: rgba(230, 126, 34, 0.12);
+  color: #f39c12;
+  border: 1px solid rgba(230, 126, 34, 0.22);
+}
+
+/* ── Buttons ── */
+.stBtnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  background: var(--brand-navy, #1e3a5f);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.stBtnPrimary:hover {
+  background: #16304f;
+  box-shadow: 0 2px 8px rgba(30, 58, 95, 0.2);
+}
+
+.stBtnPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-theme='dark'] .stBtnPrimary {
+  background: var(--accent, #6c8ebf);
+}
+[data-theme='dark'] .stBtnPrimary:hover {
+  background: #5a7aa8;
+}
+
+.stBtnSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.stBtnSecondary:hover {
+  background: var(--surface-hover, rgba(0, 0, 0, 0.03));
+}
+
+.stPwActions {
+  padding-top: 6px;
+}
+
+/* ── Search ── */
+.stSearchRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stSearchWrap {
+  position: relative;
+  flex: 1;
+  max-width: 340px;
+}
+
+.stSearchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.stSearchInput {
+  width: 100%;
+  padding: 9px 12px 9px 36px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md, 8px);
+  font-size: 13px;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--bg, #fff);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.stSearchInput:focus {
+  border-color: var(--brand-navy, #1e3a5f);
+}
+
+[data-theme='dark'] .stSearchInput {
+  background: var(--surface-2, #1a1f2e);
+  border-color: var(--border-soft);
+}
+
+.stCountBadge {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ── Table ── */
+.stTableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md, 8px);
+}
+
+.stTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.stTable th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--surface-hover, rgba(0, 0, 0, 0.02));
+}
+
+.stTable td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: middle;
+}
+
+.stTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.stTable tbody tr:hover {
+  background: var(--surface-hover, rgba(0, 0, 0, 0.015));
+}
+
+.stRowInactive {
+  opacity: 0.55;
+}
+
+.stThRight {
+  text-align: right;
+}
+
+.stTdEmail {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stTdDate {
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stTdActions {
+  text-align: right;
+  white-space: nowrap;
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.stEmptyRow {
+  text-align: center;
+  color: var(--muted);
+  padding: 32px 14px !important;
+}
+
+/* ── Role Badge ── */
+.stRoleBadge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stRoleBadgeOWNER {
+  background: rgba(108, 92, 231, 0.1);
+  color: #6c5ce7;
+}
+.stRoleBadgeRH {
+  background: rgba(0, 184, 148, 0.1);
+  color: #00b894;
+}
+.stRoleBadgeEMPLOYE {
+  background: rgba(9, 132, 227, 0.1);
+  color: #0984e3;
+}
+
+/* ── Status Dot ── */
+.stStatusDot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stStatusDot::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stStatusActive::before { background: #28a745; }
+.stStatusInactive::before { background: #dc3545; }
+
+/* ── Action Buttons ── */
+.stActBtn {
+  padding: 5px 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stActBtn:hover {
+  background: var(--surface-hover, rgba(0, 0, 0, 0.04));
+  border-color: var(--brand-navy, #1e3a5f);
+}
+
+.stActBtnWarn {
+  color: #dc3545;
+  border-color: rgba(220, 53, 69, 0.2);
+}
+.stActBtnWarn:hover {
+  background: rgba(220, 53, 69, 0.06);
+  border-color: #dc3545;
+}
+
+.stActBtnSuccess {
+  color: #28a745;
+  border-color: rgba(40, 167, 69, 0.2);
+}
+.stActBtnSuccess:hover {
+  background: rgba(40, 167, 69, 0.06);
+  border-color: #28a745;
+}
+
+/* ── Modal ── */
+.stOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+  animation: stFadeIn 0.15s ease;
+}
+
+.stModal {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg, 12px);
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  animation: stSlideUp 0.2s ease;
+}
+
+@keyframes stSlideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.stModalSmall {
+  max-width: 400px;
+}
+
+.stModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.stModalTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--brand-navy);
+}
+
+[data-theme='dark'] .stModalTitle {
+  color: var(--text);
+}
+
+.stModalClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.stModalClose:hover {
+  background: var(--surface-hover, rgba(0, 0, 0, 0.05));
+  color: var(--text);
+}
+
+.stModalBody {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stModalDesc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.stModalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--border-soft);
+}
+
+/* ── Temp Password ── */
+.stTempPwRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.stTempPwRow .stInput {
+  flex: 1;
+}
+
+.stTempPwCode {
+  display: block;
+  padding: 10px 14px;
+  background: var(--bg, #f8f9fa);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md, 8px);
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--brand-navy, #1e3a5f);
+  text-align: center;
+  flex: 1;
+}
+
+[data-theme='dark'] .stTempPwCode {
+  background: var(--surface-2, #1a1f2e);
+  color: var(--accent, #6c8ebf);
+}
+
+.stResetResult {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .stMain { padding: 0 4px; }
+  .stTabBar { flex-direction: column; }
+  .stCardHeader { flex-direction: column; }
+  .stSearchRow { flex-direction: column; align-items: stretch; }
+  .stSearchWrap { max-width: none; }
+  .stTdActions { flex-wrap: wrap; }
+}
+
+.stInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.stInputWrapper .stInput {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.stInputWrapper .togglePassword {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.stInputWrapper .togglePassword:hover {
+  color: var(--text);
+}
